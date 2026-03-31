@@ -1,0 +1,41 @@
+name: "Andromeda Linting"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  list-packages:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set-matrix
+        run: |
+          dirs=$(find packages -name "eslint.config.js" -not -path "*/node_modules/*" -exec dirname {} \;)
+          json=$(echo "$dirs" | jq -R . | jq -s -c .)
+          echo "matrix=$json" >> $GITHUB_OUTPUT
+  lint:
+    needs: list-packages
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.list-packages.outputs.matrix) }}
+    
+    defaults:
+      run:
+        working-directory: ${{ matrix.package }}
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: "Setup Node & pnpm"
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+          
+      - name: "Run Linting"
+        run: pnpm run lint

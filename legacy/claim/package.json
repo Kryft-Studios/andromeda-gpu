@@ -1,0 +1,7 @@
+{
+ "name": "andromeda-gpu",
+ "version": "0.0.0",
+ "author": {"email": "AfriaStudios@outlook.in","name": "Kryft Studios","url":"https://github.com/Kryft-Studios"},
+ "readme": "INCOMPLETE. this package is just a placeholder",
+ "publishConfig": {"access": "public"}
+}

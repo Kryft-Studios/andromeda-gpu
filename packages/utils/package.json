@@ -1,0 +1,38 @@
+{
+	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "^8.57.2",
+		"@typescript-eslint/parser": "^8.57.2",
+		"dts-minify": "^0.3.3",
+		"eslint": "^10.1.0",
+		"node": "^25.8.2",
+		"terser": "^5.46.1",
+		"typescript": "^6.0.2"
+	},
+	"name": "@andromeda-3d/utils",
+	"version": "0.2.0",
+	"scripts": {
+		"minify:js": "node minify-js.js",
+		"minify:dts": "node minify-dts.js",
+		"minify:end": "node minify-end.js",
+		"tsc": "tsc",
+		"lint": "eslint",
+		"build": "node build.js"
+	},
+	"private": "false",
+	"publishConfig": {
+		"access": "public"
+	},
+	"exports": {
+		".": {
+			"default": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		},
+		"./vertices": {
+			"default": "./dist/vertices/index.js",
+			"types": "./dist/vertices/index.d.ts"
+		}
+	},
+	"dependencies": {
+		"gl-matrix": "^3.4.4"
+	}
+}

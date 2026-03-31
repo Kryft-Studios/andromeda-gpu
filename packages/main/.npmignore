@@ -1,0 +1,15 @@
+# General
+src
+node_modules
+
+# Build
+data
+minify-dts.js
+minify-js.js
+minify-end.js
+cmd
+
+# Config 
+eslint.config.js
+tsconfig.json
+
