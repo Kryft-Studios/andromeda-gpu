@@ -16,7 +16,8 @@
 		"minify:end": "node minify-end.js",
 		"tsc": "tsc",
 		"lint": "eslint",
-		"build": "node build.js"
+		"build": "node cmd/build.js",
+		"prepublishOnly":"pnpm build"
 	},
 	"publishConfig": {
 		"access": "public"

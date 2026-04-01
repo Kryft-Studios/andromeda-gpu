@@ -16,7 +16,8 @@
 		"minify:end": "node minify-end.js",
 		"tsc": "tsc",
 		"lint": "eslint",
-		"build": "node build.js"
+		"build": "node cmd/build.js",
+		"prepublishOnly":"pnpm build"
 	},
 	"publishConfig": {
 		"access": "public"
@@ -29,6 +30,9 @@
 		"./vertices": {
 			"default": "./dist/vertices/index.js",
 			"types": "./dist/vertices/index.d.ts"
+		},
+		"./indices": {
+			"default":"./dist/indices"
 		}
 	},
 	"dependencies": {

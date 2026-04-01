@@ -16,7 +16,8 @@
 		"build": "node --no-warnings cmd/build.js",
 		"minify:js": "node --no-warnings minify-js.js",
 		"minify:dts": "node --no-warnings minify-dts.js",
-		"minify:end": "node --no-warnings minify-end.js"
+		"minify:end": "node --no-warnings minify-end.js",
+		"prepublishOnly":"pnpm build"
 	},
 	"dependencies": {
 		"@webgpu/types": "^0.1.69"
