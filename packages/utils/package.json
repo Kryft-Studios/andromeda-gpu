@@ -11,12 +11,12 @@
 	"name": "@agpu/utils",
 	"version": "0.2.0",
 	"scripts": {
-		"minify:js": "node minify-js.js",
-		"minify:dts": "node minify-dts.js",
-		"minify:end": "node minify-end.js",
+		"minify:js": "node --no-warnings minify-js.js",
+		"minify:dts": "node --no-warnings minify-dts.js",
+		"minify:end": "node --no-warnings minify-end.js",
 		"tsc": "tsc",
 		"lint": "eslint",
-		"build": "node cmd/build.js",
+		"build": "node --no-warnings cmd/build.js",
 		"prepublishOnly":"pnpm build"
 	},
 	"publishConfig": {
@@ -32,7 +32,40 @@
 			"types": "./dist/vertices/index.d.ts"
 		},
 		"./indices": {
-			"default":"./dist/indices"
+			"default":"./dist/indices/index.js",
+			"types":"./dist/indices/index.d.ts"
+		},
+		"./vec/3": {
+			"default":"./dist/maths/vector/vec3/index.js",
+			"types":"./dist/maths/vector/vec3/index.d.ts"
+		},
+		"./vec/2": {
+			"default":"./dist/maths/vector/vec2/index.js",
+			"types": "./dist/maths/vector/vec2/index.d.ts"
+		},
+		"./vec/4": {
+			"default":"./dist/maths/vector/vec4/index.js",
+			"types":"./dist/maths/vector/vec4/index.d.ts"
+		},
+		"./mat/2":{
+			"default":"./dist/maths/matrix/mat2/index.js",
+			"types":"./dist/maths/matrix/mat2/index.d.ts"
+		},
+		"./mat/3": {
+			"default":"./dist/maths/matrix/mat3/index.js",
+			"types":"./dist/maths/matrix/mat3/index.d.ts"
+		},
+		"./mat/2d": {
+			"default":"./dist/maths/matrix/mat2d/index.js",
+			"types":"./dist/maths/matrix/mat2d/index.d.ts"
+		},
+		"./mat/4":{
+			"default":"./dist/maths/matrix/mat4/index.js",
+			"types":"./dist/maths/matrix/mat4/index.d.ts"
+		},
+		"./color": {
+			"default":"./dist/maths/color/index.js",
+			"types":"./dist/maths/color/index.d.ts"
 		}
 	},
 	"dependencies": {
