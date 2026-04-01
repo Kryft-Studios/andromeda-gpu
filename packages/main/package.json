@@ -9,7 +9,7 @@
 		"typescript": "^6.0.2"
 	},
 	"name": "andromeda-gpu",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"scripts": {
 		"minify:js": "node minify-js.js",
 		"minify:dts": "node minify-dts.js",
