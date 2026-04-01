@@ -92,7 +92,6 @@ const TEXTURE_FORMAT_BPP: Record<string, number> = {
     'rg32float': 8,
     'rgba32float': 16,
 };
-/**@type {GPUBuffer} */
 /**
  * Wrapper around {@link GPUBuffer} with cached CPU-side state and convenience
  * copy helpers.
@@ -101,34 +100,24 @@ export class BufferCreator {
     #currentBuffer: GPUBuffer;
     #device: GPUDevice;
     #value: GPUAllowSharedBufferSource;
-    #bufferUsage: number;
     #dirty: boolean = false;
     #destroyed: boolean = false;
-    #usageChanged: boolean = false;
-    #label?: string
-    #readComplete: boolean
-    #onReadCompleteQueues: (Function)[] = []
-    #usageOptions: BUFFER_USAGE_OPTIONS
     constructor(device: GPUDevice, options?: BUFFER_CONSTRUCTION_OPTIONS) {
         if ((options as BUFFER_CONSTRUCTION_OPTIONS)?.value) {
             if (!((options?.usage as BUFFER_USAGE_OPTIONS).copy as { write: boolean })) throw initCouldNotAssignValue;
         }
         this.#device = device;
-        this.#usageOptions = typeof options?.usage === "object" ? options.usage : typeof options?.usage === "number" ? getOptionsFromUsage(options.usage) : {}
-        this.#label = options?.label
         this.#value = options?.value ?? new Float32Array(16);
-        this.#bufferUsage = typeof options?.usage === "object" ? getBufferUsage(options?.usage) : typeof options?.usage === "number" ? options?.usage : defaults.bufferUsage;
         // create the buffer.
         this.#currentBuffer = createBuffer(
             device,
             this.#value,
-            this.#bufferUsage,
-            this.#label,
+            typeof options?.usage === "object" ? getBufferUsage(options?.usage) : typeof options?.usage === "number" ? options?.usage : defaults.bufferUsage,
+            options?.label,
         );
 
         this.#device.queue.writeBuffer(this.#currentBuffer, 0, this.#value);
         if(!this.#checkFlags())throw error(18,"Buffer flag validation error")
-        this.#readComplete = true;
     }
     #checkFlags(): boolean {
         const garbagecan = this.can; // garbage can 🔥🔥🔥🔥
@@ -166,6 +155,17 @@ export class BufferCreator {
     raw() {
         // return the raw GPUBuffer
         return this.#currentBuffer;
+    }
+    /**
+     * Creates a new buffer wrapper with duplicated CPU-side contents and usage.
+     */
+    clone(): BufferCreator {
+        if (this.#destroyed) throw bufferDestroyedError;
+        return new BufferCreator(this.#device, {
+            value: cloneBufferSource(this.#value),
+            usage: this.#currentBuffer.usage,
+            label: this.#currentBuffer.label,
+        });
     }
     [Symbol("Symbol.disposable")]() {
         this.destroy(true)
@@ -210,57 +210,13 @@ export class BufferCreator {
         // Case 5: If the buffer is destroyed and destroy is false
         // In this case, We recreate the buffer and write it. Then we set #destroyed to true
         if (this.#destroyed && !destroy) {
-            this.#currentBuffer = createBuffer(this.#device, this.#value, this.#bufferUsage, this.#label)
+            this.#currentBuffer = createBuffer(this.#device, this.#value, this.#currentBuffer.usage, this.#currentBuffer.label)
             this.#device.queue.writeBuffer(this.#currentBuffer, 0, this.#value);
             this.#destroyed = false;
             return false;
         }
 
         return this.#destroyed;
-    }
-    /**
-     * Getter/Setter for Buffer Usage.
-     * 
-     * ● Marks the buffer as "**dirty**" if changed. 
-     * 
-     * ● If no value is passed, the function returns the current buffer usage and options of the buffer.
-     * 
-     * ● If a value is passed and the value is a number, the function returns the same buffer usage passed.
-     * 
-     * ● If a value is passed and the value is a BUFFER_USAGE_OPTIONS, the function returns the buffer usage computed from the options.
-     * 
-     * ● Throws AGPU_1 if the buffer was destroyed
-     */
-    bufferUsage(): BufferCreator.bufferUsage.RETURNS
-    bufferUsage<T extends number>(usage: T): T;
-    bufferUsage(usage: BUFFER_USAGE_OPTIONS): number
-    bufferUsage<T extends number>(usage?: T | BUFFER_USAGE_OPTIONS): number | T | BufferCreator.bufferUsage.RETURNS {
-        // Case 1: The buffer is already destroyed
-        // In this case we throw AGPU_1
-        if (this.#destroyed) throw bufferDestroyedError
-
-        // Case 2: if usage is undefined
-        // Return the current buffer usage
-        if (typeof usage === "undefined") return { number: this.#bufferUsage, ...this.#usageOptions };
-
-        // Case 3: if usage is defined, but is not equal to current usage
-        // In that case, we change the buffer usage and flag the buffer dirty in order for the buffer to take changes
-        if (usage !== this.#bufferUsage) {
-            this.#usageChanged = true;
-            this.#dirty = true;
-            if (typeof usage === "number") {
-                this.#bufferUsage = usage;
-                this.#usageOptions = getOptionsFromUsage(usage)
-            } else {
-                this.#bufferUsage = getBufferUsage(usage)
-                this.#usageOptions = usage;
-            }
-        } else {
-            // Case 4: If usage is defined and is equal to the current usage
-            // In that case, we do nothing special
-        }
-        // Return the given usage back (T).
-        return typeof usage === "number" ? usage : getBufferUsage(usage);
     }
 
     /**
@@ -318,12 +274,11 @@ export class BufferCreator {
 
         // Case 2: If label is undefined
         // In that case we just return the current label
-        if (typeof label === "undefined") return this.#label ?? this.#currentBuffer.label;
+        if (typeof label === "undefined") return this.#currentBuffer.label ?? this.#currentBuffer.label;
 
         // Case 3: If label is defined but is not equal to the current label.
         // In that case we change the value and change the "label" property of the buffer
-        if (label !== this.#label) {
-            this.#label = label;
+        if (label !== this.#currentBuffer.label) {
             this.#currentBuffer.label = label;
         } else {
             // Case 4: If label is defined and is equal to the current label
@@ -347,20 +302,18 @@ export class BufferCreator {
 
     const currentSize = this.#currentBuffer.size;
     const newSize = this.#value.byteLength;
-    const usageChanged = this.#usageChanged;
-    if (newSize > currentSize || usageChanged) {
+    if (newSize > currentSize) {
         this.#currentBuffer.destroy();
         this.#currentBuffer = createBuffer(
             this.#device,
             this.#value,
-            this.#bufferUsage,
-            this.#label
+            this.#currentBuffer.usage,
+            this.#currentBuffer.label
         );
     }
     if (!this.can.copy.write) throw couldNotAssignValue;
     this.#device.queue.writeBuffer(this.#currentBuffer, 0, this.#value);
 
-    this.#usageChanged = false;
     this.#dirty = false;
 }
 
@@ -396,42 +349,34 @@ export class BufferCreator {
 
         return data;
     }
-    async #ensureReady(): Promise<void> {
-        if (this.#readComplete) return;
-        return new Promise((resolve) => {
-            this.#onReadCompleteQueues.push(() => resolve());
-        });
-    }
     /**
      * Returns a capability summary inferred from the current buffer usage flags.
      */
     get can() {
+        const use = this.#currentBuffer.usage
         return {
             copy: {
-                read: !!(this.#bufferUsage & GPUBufferUsage.COPY_SRC),
-                write: !!(this.#bufferUsage & GPUBufferUsage.COPY_DST),
+                read: !!(use & GPUBufferUsage.COPY_SRC),
+                write: !!(use & GPUBufferUsage.COPY_DST),
             },
             map: {
-                read: !!(this.#bufferUsage & GPUBufferUsage.MAP_READ),
-                write: !!(this.#bufferUsage & GPUBufferUsage.MAP_WRITE),
+                read: !!(use & GPUBufferUsage.MAP_READ),
+                write: !!(use & GPUBufferUsage.MAP_WRITE),
             },
             beBoundAs: {
-                index: !!(this.#bufferUsage & GPUBufferUsage.INDEX),
-                vertex: !!(this.#bufferUsage & GPUBufferUsage.VERTEX),
-                uniform: !!(this.#bufferUsage & GPUBufferUsage.UNIFORM),
-                storage: !!(this.#bufferUsage & GPUBufferUsage.STORAGE),
-                indirect: !!(this.#bufferUsage & GPUBufferUsage.INDIRECT)
+                index: !!(use & GPUBufferUsage.INDEX),
+                vertex: !!(use & GPUBufferUsage.VERTEX),
+                uniform: !!(use & GPUBufferUsage.UNIFORM),
+                storage: !!(use & GPUBufferUsage.STORAGE),
+                indirect: !!(use & GPUBufferUsage.INDIRECT)
             },
-            query: !!(this.#bufferUsage & GPUBufferUsage.QUERY_RESOLVE)
+            query: !!(use & GPUBufferUsage.QUERY_RESOLVE)
         };
-
     }
     /**
      * Copies this buffer's data to another BufferCreator or GPUBuffer.
      */
     copyToBuffer(destination: BufferCreator | GPUBuffer, size?: number): void {
-        if (this.#dirty) this.sync();
-
         if (!this.can.copy.read) throw cannotBeRead;
 
         if (destination instanceof BufferCreator) {
@@ -451,7 +396,6 @@ export class BufferCreator {
         this.#device.queue.submit([encoder.finish()]);
     }
     copyToTexture(destination: TEXTURE_COPY_DESTINATION | GPUTexture, options: BUFFER_TO_TEXTURE_OPTIONS = {}): void {
-        if (this.#dirty) this.sync();
         if (!this.can.copy.read) throw cannotBeRead;
 
         if (isTextureCopyDestination(destination)) {
@@ -508,8 +452,6 @@ export class BufferCreator {
             destinationOffset
         );
         this.#device.queue.submit([encoder.finish()]);
-
-        this.#dirty = true;
     }
     [Symbol.hasInstance](instance: BufferCreator): instance is BufferCreator {
         return this.__brand === "BufferCreator"
@@ -577,4 +519,19 @@ function normalizeExtent3D(size: GPUExtent3D): RESOLVED_EXTENT_3D {
         height: sizeObject.height ?? 1,
         depthOrArrayLayers: sizeObject.depthOrArrayLayers ?? 1,
     };
+}
+function cloneBufferSource(value: GPUAllowSharedBufferSource): GPUAllowSharedBufferSource {
+    if (value instanceof ArrayBuffer) return value.slice(0);
+    if (ArrayBuffer.isView(value)) {
+        const clonedBuffer = value.buffer.slice(value.byteOffset, value.byteOffset + value.byteLength);
+        const view = value as ArrayBufferView;
+        const ctor = view.constructor as {
+            new(buffer: ArrayBufferLike, byteOffset?: number, length?: number): typeof value
+            BYTES_PER_ELEMENT?: number
+        };
+        if (view instanceof DataView) return new DataView(clonedBuffer);
+        const bytesPerElement = ctor.BYTES_PER_ELEMENT ?? 1;
+        return new ctor(clonedBuffer, 0, value.byteLength / bytesPerElement);
+    }
+    return value.slice(0);
 }

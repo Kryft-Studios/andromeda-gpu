@@ -1,13 +1,10 @@
 import brand from "../../../helpers/decorators/brand";
-import { BRAND, RAW } from "../../../helpers/types/decoratorHelpers";
+import { BRAND, LABEL, RAW } from "../../../helpers/types/decoratorHelpers";
 import RenderEncoderBase from "./commandEncoder/renderEncoderBase";
 import RenderBundleCreator from "./renderBundleEncoder/renderBundle";
 
 // eslint-disable-next-line
-export interface RenderBundleEncoderCreator extends RAW<GPURenderBundleEncoder>, BRAND<"RenderBundleEncoderCreator"> {
-    label(): string;
-    label<T extends string>(label: T): T;
-}
+export interface RenderBundleEncoderCreator extends RAW<GPURenderBundleEncoder>, BRAND<"RenderBundleEncoderCreator">, LABEL {}
 /**
  * Wrapper around {@link GPURenderBundleEncoder}.
  */
@@ -21,7 +18,7 @@ export class RenderBundleEncoderCreator extends RenderEncoderBase<GPURenderBundl
     /**
      * Finishes recording and returns a wrapped render bundle.
      */
-    finish({label}:{label?:string}) {
+    finish({label}:{label?:string}={}) {
         new RenderBundleCreator(this.encoder.finish({label}));
     }
 }

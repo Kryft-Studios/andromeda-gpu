@@ -14,11 +14,11 @@ export interface TextureViewCreator extends RAW<GPUTextureView>, BRAND<"TextureV
     set: (instance: TextureViewCreator, label) => instance.view.label = label
 })
 export class TextureViewCreator {
-    #view:GPUTextureView
-    view: GPUTextureView
+
+    /**The raw GPUTextureView of the TextureView */
+    readonly view: GPUTextureView
     constructor(view:GPUTextureView){
-        this.#view=view;
-        this.view = this.#view
+        this.view = view;
     }
 }
 export default TextureViewCreator

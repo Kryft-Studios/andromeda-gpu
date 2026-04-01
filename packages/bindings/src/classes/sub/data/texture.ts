@@ -1,7 +1,9 @@
 import align from "../../../helpers/align";
 import defaults from "../../../helpers/defaults";
 import error from "../../../helpers/errors";
+import DC_MEMBER from "../../../helpers/types/DCMember";
 import UNSURE from "../../../helpers/types/unsure";
+import BufferCreator from "./buffers";
 import TEXTURE_USAGE_OPTIONS, { getOptionsFromTextureUsage, getTextureUsage } from "./texture/textureUsageOptions";
 import TextureViewCreator from "./texture/textureView";
 
@@ -9,41 +11,42 @@ import TextureViewCreator from "./texture/textureView";
  * Public texture construction options.
  */
 interface TCO_BASE {
+    /** Initial value for the texture creator */
     value?: GPUAllowSharedBufferSource
+
+    /**The size of the texture*/
     size: GPUExtent3DStrict;
+
+    /**the miplevel count */
     mipLevelCount?: number | undefined;
+
+    /**the sample count */
     sampleCount?: number | undefined;
+
+    /**dimension, 1d, 2d or 3d */
     dimension?: GPUTextureDimension | undefined;
+
+    /**format of the texture. */
     format: GPUTextureFormat;
+
+    /**formats for the view of the texture. */
     viewFormats?: Iterable<GPUTextureFormat> | undefined;
+
+    /**Texture binding view dimension*/
     textureBindingViewDimension?: GPUTextureViewDimension | undefined;
 }
 export interface TEXTURE_CREATOR_OPTIONS extends TCO_BASE {
+    /**usage options for the texture */
     usage?: TEXTURE_USAGE_OPTIONS | number;
 }
-interface TCO_UNUM extends TCO_BASE {
-    usage?: number
+interface TCO_UNUM extends TCO_BASE,GPUTextureDescriptor {
+    /**usage options for the texture */
+    usage: number
 }
-interface RESOLVED_EXTENT_3D {
+interface RESOLVED_EXTENT_3D  extends GPUExtent3DDict {
     width: number
     height: number
     depthOrArrayLayers: number
-}
-export interface BUFFER_COPY_TARGET {
-    raw(): GPUBuffer
-    can: {
-        copy: {
-            write: boolean
-        }
-    }
-}
-export interface TEXTURE_COPY_TARGET {
-    raw(): GPUTexture
-    can: {
-        copy: {
-            write: boolean
-        }
-    }
 }
 export interface TEXTURE_TO_BUFFER_OPTIONS {
     offset?: number
@@ -109,14 +112,13 @@ export class TextureCreator {
     #value?: GPUAllowSharedBufferSource
     #destroyed: boolean = false;
     #usageOptions: TEXTURE_USAGE_OPTIONS
-    #usage: number
-    #usageChanged: boolean = false;
     constructor(device: GPUDevice, optionsOrTexture: TEXTURE_CREATOR_OPTIONS | GPUTexture) {
         this.#device = device;
-        if (!isRawGPUTexture(optionsOrTexture)) {
+        if (!(typeof (optionsOrTexture as GPUTexture).createView === "function")) {
+            optionsOrTexture = optionsOrTexture as TEXTURE_CREATOR_OPTIONS;
             const { value, usage, ...gpuDescriptor } = optionsOrTexture;
 
-            const numericUsage = this.#usage = typeof usage === "number" ? usage : typeof usage === "object" ? getTextureUsage(usage) : defaults.textureUsage;
+            const numericUsage = typeof usage === "number" ? usage : typeof usage === "object" ? getTextureUsage(usage) : defaults.textureUsage;
             this.#usageOptions = getOptionsFromTextureUsage(numericUsage);
             const resolvedSize = normalizeExtent3D(optionsOrTexture.size);
             if(resolvedSize.width<=0||resolvedSize.height<=0||resolvedSize.depthOrArrayLayers<=0)throw invalidTextureSize;
@@ -139,15 +141,14 @@ export class TextureCreator {
             }
         } else {
             // It's a raw GPUTexture
-            const texture = optionsOrTexture;
+            const texture = optionsOrTexture as GPUTexture;
             this.#usageOptions = getOptionsFromTextureUsage(texture.usage)
             this.#texture = texture;
             this.#view = new TextureViewCreator(texture.createView());
             this.#options = undefined;
             this.#value = undefined;
-            this.#usage = texture.usage
         }
-        /**@type {GPUTextureViewDescriptor} */
+
         const self = this;
         this.View = class extends TextureViewCreator {
             /**
@@ -226,13 +227,6 @@ export class TextureCreator {
             }
         );
     }
-    #recreate() {
-        if (!this.#options) throw cannotRecreateRawTexture;
-        this.#texture.destroy();
-        this.#options = { ...this.#options, usage: this.#usage };
-        this.#texture = this.#device.createTexture(this.#options as TCO_UNUM as GPUTextureDescriptor);
-        this.#view = new TextureViewCreator(this.#texture.createView());
-    }
 
     /**
      * Sync changes made.
@@ -241,13 +235,11 @@ export class TextureCreator {
      */
     sync(): void {
         if (this.#destroyed) throw textureAlreadyDestroyed
-        if (!this.#dirty && !this.#usageChanged) return;
-        if (this.#usageChanged) this.#recreate();
+        if (!this.#dirty) return;
         if (this.#value) {
             if (!this.can.copy.write) throw cannotWriteToTexture;
             this.#write(this.#value);
         }
-        this.#usageChanged = false;
         this.#dirty = false;
     }
 
@@ -255,6 +247,21 @@ export class TextureCreator {
      * Represents the raw GPUTexture
      */
     raw() { return this.#texture; }
+    /**
+     * Recreates this texture from its cached descriptor and optionally copies the
+     * cached CPU-side value if one is present.
+     */
+    clone(): TextureCreator {
+        if (this.#destroyed) throw textureAlreadyDestroyed;
+        if (!this.#options) throw cannotRecreateRawTexture;
+        const { value: _value, ...options } = this.#options;
+        const clone = new TextureCreator(this.#device, {
+            ...options,
+            value: this.#value ? cloneBufferSource(this.#value) : undefined,
+        });
+        if (this.#texture.label) clone.label(this.#texture.label);
+        return clone;
+    }
 
     /**
      * Represents the raw GPUTextureView
@@ -264,7 +271,7 @@ export class TextureCreator {
     /**
      * Copies this texture into a buffer destination.
      */
-    copyToBuffer(destination: BUFFER_COPY_TARGET | GPUBuffer, options: TEXTURE_TO_BUFFER_OPTIONS = {}): void {
+    copyToBuffer(destination: BufferCreator | DC_MEMBER<"Buffer"> | GPUBuffer, options: TEXTURE_TO_BUFFER_OPTIONS = {}): void {
         if (this.#destroyed) throw textureAlreadyDestroyed;
         if (!this.can.copy.read) throw cannotReadFromTexture;
         if (this.#dirty) this.sync();
@@ -303,7 +310,7 @@ export class TextureCreator {
     /**
      * Copies this texture into another texture destination.
      */
-    copyToTexture(destination: TEXTURE_COPY_TARGET | GPUTexture, options: TEXTURE_TO_TEXTURE_OPTIONS = {}): void {
+    copyToTexture(destination: TextureCreator | DC_MEMBER<"Texture"> | GPUTexture, options: TEXTURE_TO_TEXTURE_OPTIONS = {}): void {
         if (this.#destroyed) throw textureAlreadyDestroyed;
         if (!this.can.copy.read) throw cannotReadFromTexture;
         if (this.#dirty) this.sync();
@@ -356,18 +363,14 @@ export class TextureCreator {
         if (!this.#options) throw cannotRecreateRawTexture;
         if (newWidth <= 0 || newHeight <= 0 || newDepthOrArrayLayers <= 0) throw invalidTextureSize;
 
-        const oldWidth = this.#texture.width;
-        const oldHeight = this.#texture.height;
-        const oldDepth = this.#texture.depthOrArrayLayers;
-
-        if (newWidth === oldWidth && newHeight === oldHeight && newDepthOrArrayLayers === oldDepth) {
+        if (newWidth === this.#texture.width && newHeight === this.#texture.height && newDepthOrArrayLayers === this.#texture.depthOrArrayLayers) {
             return;
         }
-
+        
         this.#texture.destroy();
-
+        
         this.#texture = this.#device.createTexture({
-            ...this.#options as TCO_UNUM as GPUTextureDescriptor,
+            ...this.#options as TCO_UNUM,
             size: [newWidth, newHeight, newDepthOrArrayLayers],
         });
 
@@ -395,18 +398,18 @@ export class TextureCreator {
             return true;
         }
 
-        // Case 3: Texture Resurrection
-        // We recreate the texture from saved options.
+        // Case 3: Texture Resurrection [DEPRECATED]
         if (val === false && this.#destroyed) {
-            if (!this.#options) throw cannotRecreateRawTexture;
+            throw error(22,"You can not resurrect a texture. This feature is deprecated")
+            /*if (!this.#options) throw cannotRecreateRawTexture;
             this.#texture = this.#device.createTexture(this.#options as TCO_UNUM as GPUTextureDescriptor);
             this.#view = new TextureViewCreator(this.#texture.createView());
             this.#destroyed = false;
             if (this.#value) this.#write(this.#value);
-            return false;
+            return false;*/
         }
 
-        return this.#destroyed;
+        return this.#destroyed = val;
     }
 
     /**
@@ -424,53 +427,6 @@ export class TextureCreator {
         if (this.#destroyed) throw textureAlreadyDestroyed
         if (typeof label === "undefined") return (this.#options as TCO_UNUM as GPUTextureDescriptor)?.label;
         return this.#texture.label = label;
-    }
-
-    /**
-     * Getter/Setter for texture Usage.
-     * 
-     * ● Marks the texture as "**dirty**" if changed. 
-     * 
-     * ● If no value is passed, the function returns the current texture usage and options of the texture.
-     * 
-     * ● If a value is passed and the value is a number, the function returns the same texture usage passed.
-     * 
-     * ● If a value is passed and the value is a TEXTURE_USAGE_OPTIONS, the function returns the texture usage computed from the options.
-     * 
-     * ● Throws AGPU_2 if the texture was destroyed
-     */
-    textureUsage(): TextureCreator.bufferUsage.RETURNS;
-    textureUsage<T extends number>(usage: T): T;
-    textureUsage(usage: TEXTURE_USAGE_OPTIONS): number
-    textureUsage<T extends number>(usage?: T | TEXTURE_USAGE_OPTIONS): number | T | TextureCreator.bufferUsage.RETURNS {
-        // Case 1: The texture is already destroyed
-        // In this case we throw AGPU_2
-
-        if (this.#destroyed) throw textureAlreadyDestroyed
-
-        // Case 2: if usage is undefined
-        // Return the current texture usage
-        if (typeof usage === "undefined") return { number: this.#usage, ...this.#usageOptions };
-
-        // Case 3: if usage is defined, but is not equal to current usage
-        // In that case, we change the texture usage and flag the texture dirty in order for the texture to take changes
-        const nextUsage = typeof usage === "number" ? usage : getTextureUsage(usage);
-        if (nextUsage !== this.#usage) {
-            this.#usageChanged = true;
-            this.#dirty = true;
-            if (typeof usage === "number") {
-                this.#usage = usage;
-                this.#usageOptions = getOptionsFromTextureUsage(usage)
-            } else {
-                this.#usage = getTextureUsage(usage)
-                this.#usageOptions = usage;
-            }
-        } else {
-            // Case 4: If usage is defined and is equal to the current usage
-            // In that case, we do nothing special
-        }
-        // Return the given usage back (T).
-        return typeof usage === "number" ? usage : getTextureUsage(usage);
     }
     [Symbol.hasInstance](instance: TextureCreator): instance is TextureCreator {
         return instance.__brand === "TextureCreator"
@@ -503,14 +459,11 @@ function getTextureCopySize(texture: GPUTexture, mipLevel: number | undefined, s
         depthOrArrayLayers: texture.depthOrArrayLayers,
     };
 }
-function isBufferCopyTarget(target: BUFFER_COPY_TARGET | GPUBuffer): target is BUFFER_COPY_TARGET {
-    return typeof (target as BUFFER_COPY_TARGET).raw === "function";
+function isBufferCopyTarget(target: BufferCreator | GPUBuffer): target is BufferCreator {
+    return typeof (target as BufferCreator).raw === "function";
 }
-function isRawGPUTexture(texture: TEXTURE_CREATOR_OPTIONS | GPUTexture): texture is GPUTexture {
-    return typeof (texture as GPUTexture).createView === "function";
-}
-function isTextureCopyTarget(target: TEXTURE_COPY_TARGET | GPUTexture): target is TEXTURE_COPY_TARGET {
-    return typeof (target as TEXTURE_COPY_TARGET).raw === "function";
+function isTextureCopyTarget(target: TextureCreator | GPUTexture): target is  TextureCreator {
+    return typeof (target as  TextureCreator).raw === "function";
 }
 function getBufferCopyOptions(buffer: GPUBuffer) {
     return {
@@ -545,4 +498,19 @@ function normalizeExtent3D(size: GPUExtent3D): RESOLVED_EXTENT_3D {
         height: sizeObject.height ?? 1,
         depthOrArrayLayers: sizeObject.depthOrArrayLayers ?? 1,
     };
+}
+function cloneBufferSource(value: GPUAllowSharedBufferSource): GPUAllowSharedBufferSource {
+    if (value instanceof ArrayBuffer) return value.slice(0);
+    if (ArrayBuffer.isView(value)) {
+        const clonedBuffer = value.buffer.slice(value.byteOffset, value.byteOffset + value.byteLength);
+        const view = value as ArrayBufferView;
+        const ctor = view.constructor as {
+            new(buffer: ArrayBufferLike, byteOffset?: number, length?: number): typeof value
+            BYTES_PER_ELEMENT?: number
+        };
+        if (view instanceof DataView) return new DataView(clonedBuffer);
+        const bytesPerElement = ctor.BYTES_PER_ELEMENT ?? 1;
+        return new ctor(clonedBuffer, 0, value.byteLength / bytesPerElement);
+    }
+    return value.slice(0);
 }

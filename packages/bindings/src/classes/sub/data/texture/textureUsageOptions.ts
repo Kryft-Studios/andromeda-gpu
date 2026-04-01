@@ -2,11 +2,14 @@
  * Structured texture usage flags used by this package.
  */
 interface TEXTURE_COPY_OPTIONS {
+    /**Whether the texture can be read while copying. */
     read?: boolean
+    /**Whether the texture can be read while writing. */
     write?:boolean
 }
 
 interface TEXTURE_BINDING_OPTIONS {
+    /**Whether the texture can be bound as a storage texture */
     storage?:boolean;
     texture?:boolean;
 }
@@ -36,12 +39,11 @@ interface TEXTURE_USAGE_OPTIONS {
      * Specify how this texture will be bound to shaders
      */
     binding?:TEXTURE_BINDING_OPTIONS
+
+    transientAttachment?:boolean
 }
 export default TEXTURE_USAGE_OPTIONS
 
-/**
- * Expands native `GPUTextureUsage` bits into structured texture options.
- */
 export function getOptionsFromTextureUsage(usage: number): TEXTURE_USAGE_OPTIONS {
     const hasCopyRead = !!(usage & GPUTextureUsage.COPY_SRC);
     const hasCopyWrite = !!(usage & GPUTextureUsage.COPY_DST);
@@ -55,13 +57,11 @@ export function getOptionsFromTextureUsage(usage: number): TEXTURE_USAGE_OPTIONS
         binding: {
             texture: !!(usage & GPUTextureUsage.TEXTURE_BINDING),
             storage: !!(usage & GPUTextureUsage.STORAGE_BINDING),
-        }
+        },
+        transientAttachment: !!(usage && GPUTextureUsage.TRANSIENT_ATTACHMENT)
     };
 }
 
-/**
- * Converts structured texture options into native `GPUTextureUsage` bits.
- */
 export function getTextureUsage(options: TEXTURE_USAGE_OPTIONS): number {
     let usage = 0;
 
@@ -71,13 +71,14 @@ export function getTextureUsage(options: TEXTURE_USAGE_OPTIONS): number {
         if (options.copy.read) usage |= GPUTextureUsage.COPY_SRC;
         if (options.copy.write) usage |= GPUTextureUsage.COPY_DST;
     }
-
     if (options.renderAttachment) usage |= GPUTextureUsage.RENDER_ATTACHMENT;
 
     if (options.binding) {
         if (options.binding.texture) usage |= GPUTextureUsage.TEXTURE_BINDING;
         if (options.binding.storage) usage |= GPUTextureUsage.STORAGE_BINDING;
     }
+
+    if(options.transientAttachment) usage |= GPUTextureUsage.TRANSIENT_ATTACHMENT;
 
     return usage;
 }

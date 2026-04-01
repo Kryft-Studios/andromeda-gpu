@@ -2,38 +2,39 @@ import brand from "../../../helpers/decorators/brand";
 import labeling from "../../../helpers/decorators/labelling";
 import raw from "../../../helpers/decorators/raw";
 import DC_MEMBER from "../../../helpers/types/DCMember";
-import { BRAND, RAW } from "../../../helpers/types/decoratorHelpers";
-import UNSURE from "../../../helpers/types/unsure";
+import { BRAND, LABEL, RAW } from "../../../helpers/types/decoratorHelpers";
 import BindGroupLayoutCreator from "./bindGroupLayout";
 import BufferCreator from "./buffers";
 import SamplerCreator from "../pipeline/sampler";
 import TextureCreator from "./texture";
 // eslint-disable-next-line
-export interface BindGroupCreator extends RAW<GPUBindGroup>, BRAND<"BindGroupCreator"> {
-    label(): UNSURE<string>;
-    label<T extends string>(label: T): T;
-}
+export interface BindGroupCreator extends RAW<GPUBindGroup>, BRAND<"BindGroupCreator">,LABEL {}
 /**
  * Wrapper around {@link GPUBindGroup}.
  */
 @brand("BindGroupCreator")
 @raw("bindGroup")
 @labeling({
-    get: (instance: BindGroupCreator) => instance.labelValue,
-    set: (instance: BindGroupCreator, label) => instance.bindGroup.label = instance.labelValue = label
+    get: (instance: BindGroupCreator) => instance.bindGroup.label,
+    set: (instance: BindGroupCreator, label) => instance.bindGroup.label = label
 })
 export class BindGroupCreator {
-    #bindGroup:GPUBindGroup
-    #label?:string
-    #layout:UNSURE<BindGroupLayoutCreator|DC_MEMBER<"BindGroupLayout">>
-    bindGroup: GPUBindGroup
-    labelValue?: string
+    #device?: GPUDevice
+    #options?: BIND_GROUP_OPTIONS
+    #layout:BindGroupLayoutCreator|DC_MEMBER<"BindGroupLayout">
+    readonly bindGroup: GPUBindGroup
     constructor(device:GPUDevice,options:BIND_GROUP_OPTIONS|GPUBindGroup){
-        this.#bindGroup=(options as BIND_GROUP_OPTIONS).layout?device.createBindGroup(this.#buildOptions(options as BIND_GROUP_OPTIONS)):options as GPUBindGroup
-        this.#label=options.label
         this.#layout = (options as BIND_GROUP_OPTIONS).layout
-        this.bindGroup = this.#bindGroup
-        this.labelValue = this.#label
+        if ((options as BIND_GROUP_OPTIONS).layout) {
+            this.#device = device;
+            this.#options = {
+                ...(options as BIND_GROUP_OPTIONS),
+                entries: (options as BIND_GROUP_OPTIONS).entries.map(entry => ({ ...entry })),
+            };
+            this.bindGroup = device.createBindGroup(this.#buildOptions(options as BIND_GROUP_OPTIONS));
+        } else {
+            this.bindGroup = options as GPUBindGroup;
+        }
     }
     #buildOptions(options:BIND_GROUP_OPTIONS):GPUBindGroupDescriptor {
         return {
@@ -46,10 +47,23 @@ export class BindGroupCreator {
         }
     }
     /**
-     * Returns the layout wrapper used to create this bind group, if known.
+     * Returns the layout wrapper used to create this bind group
      */
     layout(){
         return this.#layout;
+    }
+    /**
+     * Recreates the bind group from its original layout and entries when available.
+     */
+    clone(): BindGroupCreator {
+        if (!this.#device || !this.#options) {
+            throw new TypeError("Cannot clone a BindGroupCreator created from a raw GPUBindGroup.");
+        }
+        return new BindGroupCreator(this.#device, {
+            ...this.#options,
+            label: this.bindGroup.label || this.#options.label,
+            entries: this.#options.entries.map(entry => ({ ...entry })),
+        });
     }
 }
 
@@ -59,14 +73,16 @@ export default BindGroupCreator
  * Options used to create a bind group wrapper.
  */
 export interface BIND_GROUP_OPTIONS extends GPUObjectDescriptorBase {
+    /**The layout of the bind group.*/
     layout:BindGroupLayoutCreator|DC_MEMBER<"BindGroupLayout">
+    /**entries in the bind group. */
     entries: {
+        /**The @binding(n) of the entry.*/
         binding:number,
+
+        /**The resource.*/
         resource:TextureCreator|DC_MEMBER<"Texture">   |
                  BufferCreator |DC_MEMBER<"Buffer">    |
                  SamplerCreator|DC_MEMBER<"Sampler">
         }[]
 }
-
-/**@type {GPUBindGroupDescriptor} */
-/**@type {GPUBindGroupLayoutDescriptor} */

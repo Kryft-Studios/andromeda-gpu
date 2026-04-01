@@ -2,7 +2,7 @@ First of all, you must follow [the main contributing.md](https://github.com/Kryf
 
 ## Why this exists
 
-Andromeda GPU aims to be a clean, fast, and developer-friendly abstraction over WebGPU/WebGL.
+Andromeda GPU aims to be a clean, fast, and developer-friendly abstraction over WebGPU.
 This CONTRIBUTING guide ensures consistency, performance, and readability across the codebase.
 
 ## VSCode Extensions that might be helpful while contributing

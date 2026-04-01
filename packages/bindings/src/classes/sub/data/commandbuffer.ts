@@ -14,11 +14,9 @@ export interface CommandBufferCreator extends BRAND<"CommandBufferCreator">, LAB
 })
 @raw("commandBuffer")
 export class CommandBufferCreator {
-    #cmdbuf:GPUCommandBuffer
-    commandBuffer: GPUCommandBuffer
+    readonly commandBuffer: GPUCommandBuffer
     constructor(cmdbuf:GPUCommandBuffer){
-        this.#cmdbuf=cmdbuf
-        this.commandBuffer = this.#cmdbuf
+        this.commandBuffer = cmdbuf
     }
 }
 export default CommandBufferCreator

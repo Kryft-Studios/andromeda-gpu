@@ -11,14 +11,14 @@ import PipelineLayoutCreator from "./pipelineLayout";
 
 const defaultPrimitiveState: GPUPrimitiveState = {
     topology: "triangle-list",
-    frontFace: "ccw", 
-    cullMode: "back", 
+    frontFace: "ccw",
+    cullMode: "back",
 };
 const defaultDepthStencil: DEPTH_STENCIL = {
     format: "depth24plus",
     depth: {
-        write:true,
-        compare:"less"
+        write: true,
+        compare: "less"
     }
 };
 const defaultMultiSample: GPUMultisampleState = {
@@ -36,31 +36,26 @@ export interface RenderPipelineCreator extends RAW<Promise<GPURenderPipeline>>, 
 @brand("RenderPipelineCreator")
 @raw("pipeline")
 @labeling({
-    get: (instance: RenderPipelineCreator) => Promise.resolve(instance.labelValue),
-    set: async (instance: RenderPipelineCreator, label) => (await instance.pipeline).label = instance.labelValue = label
+    get: async (instance: RenderPipelineCreator) => (await instance.pipeline).label,
+    set: async (instance: RenderPipelineCreator, label) => (await instance.pipeline).label = label
 })
 export class RenderPipelineCreator {
-    #device:GPUDevice
-    #options?:RENDER_PIPELINE_OPTIONS
-    #pipeline:Promise<GPURenderPipeline>
-    #label?:string
-    #gblcache:Record<number,InstanceType<DeviceControls["BindGroupLayout"]>>={}
-    #initWaiters:((bool:boolean)=>any)[]=[]
-    #pipelineCreated:boolean=false;
-    #pipelineInitFailed:boolean=false;
+    #device?: GPUDevice
+    #options?: RENDER_PIPELINE_OPTIONS
+    #gblcache: Record<number, InstanceType<DeviceControls["BindGroupLayout"]>> = {}
+    #initWaiters: ((bool: boolean) => any)[] = []
+    #pipelineCreated: boolean = false;
+    #pipelineInitFailed: boolean = false;
     pipeline: Promise<GPURenderPipeline>
-    labelValue?: string
     constructor(device: GPUDevice, optionsOrPipeline: RENDER_PIPELINE_OPTIONS | GPURenderPipeline) {
-        this.#device = device
         let $ = { ...{ multisample: defaultMultiSample, depthStencil: defaultDepthStencil, primitive: defaultPrimitiveState } }
-        if(!(optionsOrPipeline instanceof GPURenderPipeline)){this.#options=$={...$,...optionsOrPipeline}}
-        this.#label=optionsOrPipeline.label
-
         if (optionsOrPipeline instanceof GPURenderPipeline) {
             this.#pipelineCreated = true;
-            this.#pipeline = Promise.resolve(optionsOrPipeline);
+            this.pipeline = Promise.resolve(optionsOrPipeline);
         } else if (optionsOrPipeline?.async) {
-            this.#pipeline = device.createRenderPipelineAsync(this.#buildPipelineDescriptor())
+            this.#device = device;
+            this.#options = cloneRenderPipelineOptions(optionsOrPipeline);
+            this.pipeline = device.createRenderPipelineAsync(this.#buildPipelineDescriptor({ ...$, ...optionsOrPipeline }))
                 .then((pipeline) => {
                     this.#pipelineCreated = true;
                     this.#pipelineInitFailed = false;
@@ -74,99 +69,104 @@ export class RenderPipelineCreator {
                     throw cause;
                 });
         } else {
+            this.#device = device;
+            this.#options = cloneRenderPipelineOptions(optionsOrPipeline);
             this.#pipelineCreated = true;
             this.#pipelineInitFailed = false;
-            this.#pipeline = Promise.resolve(device.createRenderPipeline(this.#buildPipelineDescriptor()));
+            this.pipeline = Promise.resolve(device.createRenderPipeline(this.#buildPipelineDescriptor({ ...$, ...optionsOrPipeline })));
         }
-        this.pipeline = this.#pipeline
-        this.labelValue = this.#label
+        this.bindGroupLayout = async function (index: number) {
+            if (this.#gblcache[index]) return this.#gblcache[index]
+            return this.#gblcache[index] = new BindGroupLayoutCreator(device, (await this.pipeline).getBindGroupLayout(index)) as InstanceType<DeviceControls["BindGroupLayout"]>
+        }
     }
-    #flushInitWaiters(success:boolean){
+    #flushInitWaiters(success: boolean) {
         const waiters = this.#initWaiters.splice(0);
-        waiters.forEach(waiter=>waiter(success));
+        waiters.forEach(waiter => waiter(success));
     }
-    #buildVertexState(){
+    #buildVertexState(opts: VERTEX_STATE) {
 
         // @ts-ignore
-        let module = this.#options.vertex.module
-        let state:GPUVertexState = {
-            module:module.raw()
+        let module = opts.vertex.module
+        let state: GPUVertexState = {
+            module: module.raw()
         }
         let entryPoint = module.entryPoint()
-        if(entryPoint)state.entryPoint=entryPoint
+        if (entryPoint) state.entryPoint = entryPoint
         let constants = module.constants()
-        if(constants)state.constants=constants
+        if (constants) state.constants = constants
 
         // @ts-ignore
-        let buffers = this.#options.vertex.buffers
-        if(buffers)state.buffers=buffers;
+        let buffers = opts.vertex.buffers
+        if (buffers) state.buffers = buffers;
         return state
     }
-    #buildFragmentState(){
+    #buildFragmentState(opts: FRAGMENT_STATE) {
         //@ts-ignore
-        let module = this.#options.fragment.module
-        let state:GPUFragmentState = {
-            module:module.raw(),
+        let module = opts.fragment.module
+        let state: GPUFragmentState = {
+            module: module.raw(),
 
             // @ts-ignore
-            targets:this.#options.fragment.targets
+            targets: opts.fragment.targets
         }
         let entryPoint = module.entryPoint()
-        if(entryPoint)state.entryPoint=entryPoint
+        if (entryPoint) state.entryPoint = entryPoint
         let constants = module.constants()
-        if(constants)state.constants=constants
+        if (constants) state.constants = constants
         return state
     }
-    #buildDepthStencil(depthstencil?:DEPTH_STENCIL):GPUDepthStencilState{
-        if(!depthstencil)return {format:"depth24plus"}
+    #buildDepthStencil(depthstencil?: DEPTH_STENCIL): GPUDepthStencilState {
+        if (!depthstencil) return { format: "depth24plus" }
         return {
-            format:depthstencil.format,
-            depthWriteEnabled:depthstencil.depth?.write,
-            depthCompare:depthstencil.depth?.compare,
-            stencilBack:depthstencil.stencil?.back,
-            stencilFront:depthstencil.stencil?.front,
-            stencilReadMask:depthstencil.stencil?.mask?.read,
-            stencilWriteMask:depthstencil.stencil?.mask?.write,
-            depthBias:depthstencil.depthBias?.value,
-            depthBiasClamp:depthstencil.depthBias?.clamp,
-            depthBiasSlopeScale:depthstencil.depthBias?.slopeScale
+            format: depthstencil.format,
+            depthWriteEnabled: depthstencil.depth?.write,
+            depthCompare: depthstencil.depth?.compare,
+            stencilBack: depthstencil.stencil?.back,
+            stencilFront: depthstencil.stencil?.front,
+            stencilReadMask: depthstencil.stencil?.mask?.read,
+            stencilWriteMask: depthstencil.stencil?.mask?.write,
+            depthBias: depthstencil.depthBias?.value,
+            depthBiasClamp: depthstencil.depthBias?.clamp,
+            depthBiasSlopeScale: depthstencil.depthBias?.slopeScale
         }
     }
-    #buildPipelineDescriptor(){
-        if(!this.#options?.vertex?.module){
-            throw error(40,"RenderPipeline requires a vertex shader module.","Pass vertex.module when constructing RenderPipelineCreator.");
+    #buildPipelineDescriptor(opts: RENDER_PIPELINE_OPTIONS) {
+        if (!opts?.vertex?.module) {
+            throw error(40, "RenderPipeline requires a vertex shader module.", "Pass vertex.module when constructing RenderPipelineCreator.");
         }
-        if(!this.#options?.layout){
-            throw error(41,"RenderPipeline requires a pipeline layout or auto layout mode.","Pass a PipelineLayout wrapper or a valid GPUAutoLayoutMode.");
+        if (!opts?.layout) {
+            throw error(41, "RenderPipeline requires a pipeline layout or auto layout mode.", "Pass a PipelineLayout wrapper or a valid GPUAutoLayoutMode.");
         }
         let descriptor: GPURenderPipelineDescriptor = {
 
             // @ts-ignore
-            layout:this.#options.layout.raw()??this.#options?.layout,
-            vertex:this.#buildVertexState()
+            layout: opts.layout.raw() ?? opts?.layout,
+            vertex: this.#buildVertexState(opts.vertex)
         }
         // @ts-ignore
-        if(this.#options.fragment?.module){
-            descriptor.fragment=this.#buildFragmentState()
+        if (opts.fragment?.module) {
+
+            descriptor.fragment = this.#buildFragmentState(opts.fragment)
         }
         // @ts-ignore
-        if(this.#options.depthStencil){
-            descriptor.depthStencil=this.#buildDepthStencil(this.#options?.depthStencil)
+        if (opts.depthStencil) {
+            descriptor.depthStencil = this.#buildDepthStencil(opts?.depthStencil)
         }
         // @ts-ignore
-        if(this.#options.multisample){
+        if (opts.multisample) {
             // @ts-ignore
-            descriptor.multisample = this.#options.multisample
+            descriptor.multisample = opts.multisample
         }
         // @ts-ignore
-        if(this.#options.primitive){
+        if (opts.primitive) {
             // @ts-ignore
-            descriptor.primitive=this.#options.primitive
+            descriptor.primitive = opts.primitive
         }
         // @ts-ignore
-        if(this.#options.label){
+        if (opts.label) {
             // @ts-ignore
-            descriptor.label=this.#options.label
+            descriptor.label = opts.label
         }
         return descriptor
     }
@@ -174,12 +174,12 @@ export class RenderPipelineCreator {
     /**
      * Wait for the pipeline to resolve/reject
      */
-    init(){
-        if(this.#pipelineCreated)return Promise.resolve(true)
-        if(this.#pipelineInitFailed)return Promise.reject(error(42,"RenderPipeline initialization failed.","Inspect the pipeline descriptor, shader entry points, and GPU validation messages for the original failure."));
-        return new Promise((resolve,reject)=>{
-            this.#initWaiters.push(a=>{
-                if(a)resolve(a)
+    init() {
+        if (this.#pipelineCreated) return Promise.resolve(true)
+        if (this.#pipelineInitFailed) return Promise.reject(error(42, "RenderPipeline initialization failed.", "Inspect the pipeline descriptor, shader entry points, and GPU validation messages for the original failure."));
+        return new Promise((resolve, reject) => {
+            this.#initWaiters.push(a => {
+                if (a) resolve(a)
                 else reject(a)
             })
         })
@@ -187,11 +187,17 @@ export class RenderPipelineCreator {
     /**
      * Represents {@link GPUPipelineBase.getBindGroupLayout}
      */
-    async bindGroupLayout(index:number) {
-        if(this.#gblcache[index])return this.#gblcache[index] 
-        return this.#gblcache[index] = new BindGroupLayoutCreator(this.#device,(await this.#pipeline).getBindGroupLayout(index)) as InstanceType<DeviceControls["BindGroupLayout"]>
-    }
+    bindGroupLayout
 
+    /**
+     * Recreates the render pipeline from its original descriptor when available.
+     */
+    clone(): RenderPipelineCreator {
+        if (!this.#device || !this.#options) {
+            throw new TypeError("Cannot clone a RenderPipelineCreator created from a raw GPURenderPipeline.");
+        }
+        return new RenderPipelineCreator(this.#device, cloneRenderPipelineOptions(this.#options));
+    }
 }
 
 export interface RENDER_PIPELINE_OPTIONS extends GPUObjectDescriptorBase {
@@ -200,45 +206,45 @@ export interface RENDER_PIPELINE_OPTIONS extends GPUObjectDescriptorBase {
     vertex: VERTEX_STATE
 
     /** {@link GPURenderPipelineDescriptor.primitive} */
-    primitive?:GPUPrimitiveState
+    primitive?: GPUPrimitiveState
 
     /** {@link GPURenderPipelineDescriptor.depthStencil} */
-    depthStencil?:DEPTH_STENCIL
+    depthStencil?: DEPTH_STENCIL
 
     /** {@link GPURenderPipelineDescriptor.multisample} */
     multisample?: GPUMultisampleState
 
     /** {@link GPURenderPipelineDescriptor.fragment} */
-    fragment?:FRAGMENT_STATE
+    fragment?: FRAGMENT_STATE
 
     /**{@link GPUPipelineDescriptorBase.layout} */
-    layout:  InstanceType<DeviceControls["PipelineLayout"]>|PipelineLayoutCreator| GPUAutoLayoutMode;
+    layout: InstanceType<DeviceControls["PipelineLayout"]> | PipelineLayoutCreator | GPUAutoLayoutMode;
 
     /**Whether to create the pipeline async */
-    async?:boolean
+    async?: boolean
 }
 
 /**
  * Depth/stencil configuration used when creating render pipelines.
  */
 export interface DEPTH_STENCIL {
-    format:GPUTextureFormat
+    format: GPUTextureFormat
     depth?: {
-        write?:boolean
-        compare?:GPUCompareFunction
+        write?: boolean
+        compare?: GPUCompareFunction
     }
-    stencil?:{
-        front?:STENCIL_FACE_STATE
-        back?:STENCIL_FACE_STATE
-        mask?:{
-            read?:GPUStencilValue
-            write?:GPUStencilValue
+    stencil?: {
+        front?: STENCIL_FACE_STATE
+        back?: STENCIL_FACE_STATE
+        mask?: {
+            read?: GPUStencilValue
+            write?: GPUStencilValue
         }
     }
     depthBias?: {
-        value?:GPUDepthBias
-        slopeScale?:number;
-        clamp?:number;
+        value?: GPUDepthBias
+        slopeScale?: number;
+        clamp?: number;
     }
 }
 
@@ -246,11 +252,11 @@ export interface DEPTH_STENCIL {
  * Stencil-face state used by {@link DEPTH_STENCIL}.
  */
 export interface STENCIL_FACE_STATE {
-    compare?:GPUCompareFunction
+    compare?: GPUCompareFunction
     operation?: {
-        fail?:GPUStencilOperation
-        depthFail?:GPUStencilOperation
-        pass?:GPUStencilOperation
+        fail?: GPUStencilOperation
+        depthFail?: GPUStencilOperation
+        pass?: GPUStencilOperation
     }
 }
 
@@ -269,7 +275,7 @@ export interface VERTEX_STATE extends PROGRAMMABLE_STAGE {
 export interface PROGRAMMABLE_STAGE {
 
     /**{@link DeviceControls.ShaderModule} */
-    module: InstanceType<DeviceControls["ShaderModule"]>|ShaderModuleCreator
+    module: InstanceType<DeviceControls["ShaderModule"]> | ShaderModuleCreator
 }
 
 /**
@@ -280,3 +286,32 @@ export interface FRAGMENT_STATE extends PROGRAMMABLE_STAGE {
     targets: Iterable<GPUColorTargetState>;
 }
 export default RenderPipelineCreator
+function cloneRenderPipelineOptions(options: RENDER_PIPELINE_OPTIONS): RENDER_PIPELINE_OPTIONS {
+    return {
+        ...options,
+        vertex: {
+            ...options.vertex,
+            buffers: options.vertex.buffers ? Array.from(options.vertex.buffers) : undefined,
+        },
+        primitive: options.primitive ? { ...options.primitive } : undefined,
+        depthStencil: cloneDepthStencil(options.depthStencil),
+        multisample: options.multisample ? { ...options.multisample } : undefined,
+        fragment: options.fragment ? {
+            ...options.fragment,
+            targets: Array.from(options.fragment.targets),
+        } : undefined,
+    };
+}
+function cloneDepthStencil(depthStencil?: DEPTH_STENCIL): DEPTH_STENCIL | undefined {
+    if (!depthStencil) return undefined;
+    return {
+        ...depthStencil,
+        depth: depthStencil.depth ? { ...depthStencil.depth } : undefined,
+        stencil: depthStencil.stencil ? {
+            front: depthStencil.stencil.front ? { ...depthStencil.stencil.front } : undefined,
+            back: depthStencil.stencil.back ? { ...depthStencil.stencil.back } : undefined,
+            mask: depthStencil.stencil.mask ? { ...depthStencil.stencil.mask } : undefined,
+        } : undefined,
+        depthBias: depthStencil.depthBias ? { ...depthStencil.depthBias } : undefined,
+    };
+}

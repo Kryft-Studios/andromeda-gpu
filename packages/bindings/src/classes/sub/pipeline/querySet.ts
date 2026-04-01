@@ -1,6 +1,7 @@
 import brand from "../../../helpers/decorators/brand";
 import labeling from "../../../helpers/decorators/labelling";
 import raw from "../../../helpers/decorators/raw";
+import error from "../../../helpers/errors";
 import { BRAND, RAW } from "../../../helpers/types/decoratorHelpers";
 // eslint-disable-next-line
 export interface QuerySetCreator extends RAW<GPUQuerySet>, BRAND<"QuerySetCreator"> {
@@ -14,35 +15,34 @@ export interface QuerySetCreator extends RAW<GPUQuerySet>, BRAND<"QuerySetCreato
 @raw("querySet")
 @labeling({
     get: (instance: QuerySetCreator) => instance.querySet.label,
-    set: (instance: QuerySetCreator, label) => {
-        instance.queryDescriptor.label = label;
-        return instance.querySet.label = label;
-    }
+    set: (instance: QuerySetCreator, label) => {        return instance.querySet.label = label; }
 })
 export class QuerySetCreator {
-    #qs: GPUQuerySet;
     #device: GPUDevice;
-    #descriptor: GPUQuerySetDescriptor;
     #destroyed: boolean = false;
     querySet: GPUQuerySet;
     queryDescriptor: GPUQuerySetDescriptor;
 
     constructor(device: GPUDevice, options: GPUQuerySetDescriptor | GPUQuerySet) {
         this.#device = device;
-        
         if (options instanceof GPUQuerySet) {
-            this.#qs = options;
-            this.#descriptor = {
+            this.querySet = options;
+            this.queryDescriptor = {
                 type: options.type,
                 count: options.count,
                 label: options.label
             };
         } else {
-            this.#descriptor = options;
-            this.#qs = device.createQuerySet(options);
+            this.queryDescriptor = options;
+            this.querySet = device.createQuerySet(options);
         }
-        this.querySet = this.#qs;
-        this.queryDescriptor = this.#descriptor;
+    }
+    /**
+     * Creates a new query set wrapper from the cached descriptor.
+     */
+    clone(): QuerySetCreator {
+        if (this.#destroyed) throw error(52, "Cannot clone a destroyed QuerySet.", "Clone the query set before destroying it.");
+        return new QuerySetCreator(this.#device, { ...this.queryDescriptor });
     }
 
     /**
@@ -57,16 +57,17 @@ export class QuerySetCreator {
 
         if (!this.#destroyed && destroy) {
             this.#destroyed = true;
-            this.#qs.destroy();
+            this.querySet.destroy();
             return true;
         }
 
         if (!this.#destroyed && !destroy) return false;
 
         if (this.#destroyed && !destroy) {
-            this.#qs = this.#device.createQuerySet(this.#descriptor);
+            throw error(51,"Resurrecting a query set is not allowed. This feature is deprecated")
+            /*this.#qs = this.#device.createQuerySet(this.#descriptor);
             this.#destroyed = false;
-            return false;
+            return false;*/
         }
 
         return this.#destroyed;

@@ -65,7 +65,7 @@ export interface COMMON_RENDER_ENCODER {
     set: <T_ENCODER extends COMMON_RENDER_ENCODER>(instance: RenderEncoderBase<T_ENCODER>, label: string) => instance.encoder.label = label
 })
 export default class RenderEncoderBase<T_ENCODER extends COMMON_RENDER_ENCODER = COMMON_RENDER_ENCODER>{
-    protected readonly encoder: T_ENCODER;
+    readonly encoder: T_ENCODER;
 
     /**
      * Draw helpers plus indirect-buffer helper constructors.

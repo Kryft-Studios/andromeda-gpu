@@ -2,15 +2,22 @@
  * Fine-grained copy flags for buffer usage construction.
  */
 export interface BUFFER_COPY_OPTIONS {
+    /**Whether the buffer can be read while being copied. */
     read?: boolean;
+    /**Whether the buffer can be written to while being copied */
     write?: boolean;
 }
 
 export interface BUFFER_BINDING_OPTIONS {
+    /**Whether the buffer can be bound as a vertex buffer */
     vertex?: boolean;
+    /**Whether the buffer can be bound as a index buffer */
     index?: boolean;
+    /**Whether the buffer can be bound as a uniform buffer */
     uniform?: boolean;
+    /**Whether the buffer can be bound as a storage buffer */
     storage?: boolean;
+    /**Whether the buffer can be bound as a indirect buffer */
     indirect?: boolean;
 }
 
@@ -18,7 +25,10 @@ export interface BUFFER_BINDING_OPTIONS {
  * CPU mapping flags for buffer usage construction.
  */
 export interface BUFFER_MAP_OPTIONS {
+    /**Whether the buffer can be read while mapping */
     read?: boolean;
+
+    /**Whether the buffer can be written to while mapping */
     write?: boolean;
 }
 

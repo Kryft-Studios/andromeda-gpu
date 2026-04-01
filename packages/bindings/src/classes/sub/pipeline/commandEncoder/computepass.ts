@@ -16,17 +16,15 @@ export interface ComputePassCreator extends RAW<GPUComputePassEncoder>, BRAND<"C
  * Wrapper around {@link GPUComputePassEncoder}.
  */
 @brand("ComputePassCreator")
-@raw("cppass")
+@raw("computepass")
 @labeling({
-    get: (i: ComputePassCreator) => i.cppass.label,
-    set: (i, label) => i.cppass.label = label
+    get: (i: ComputePassCreator) => i.computepass.label,
+    set: (i, label) => i.computepass.label = label
 })
 export class ComputePassCreator {
-    #cppass
-    cppass: GPUComputePassEncoder
+    readonly computepass: GPUComputePassEncoder
     constructor(device:GPUDevice,cmdencoder:GPUCommandEncoder,options?:COMPUTE_PASS_OPTIONS){
-        this.#cppass = cmdencoder.beginComputePass(this.#buildOptions(options))
-        this.cppass=this.#cppass
+        this.computepass=cmdencoder.beginComputePass(this.#buildOptions(options))
         class IndirectBufferBase extends IndirectBufferCreator {
                     static readonly len: number = 1;
         
@@ -55,29 +53,30 @@ export class ComputePassCreator {
                         });
                     }
         }
+        const computepass = this.computepass
         class DispatchWorkgroupIndirectBuffer extends IndirectBufferBase {
             static readonly len = 3
         }
         this.dispatchWorkgroup = Object.assign((x:number,y:number,z:number)=>{
-            this.#cppass.dispatchWorkgroups(x,y,z)
+            computepass.dispatchWorkgroups(x,y,z)
         },{
             IndirectBuffer:DispatchWorkgroupIndirectBuffer,
             indirect:(buffer:DispatchWorkgroupIndirectBuffer,offset:number)=>{
-                this.#cppass.dispatchWorkgroupsIndirect(buffer.raw(),offset)
+                computepass.dispatchWorkgroupsIndirect(buffer.raw(),offset)
             }
         })
         this.debug = {
                     push: (label: string) => {
                         this.#debugDepth++;
-                        this.#cppass.pushDebugGroup(label)
+                        computepass.pushDebugGroup(label)
                     },
                     pop: () => {
                         if (this.#debugDepth <= 0) throw error(17, "debug.pop used before init")
-                        this.#cppass.popDebugGroup()
+                        computepass.popDebugGroup()
                         this.#debugDepth--
                     },
                     insertMarker: (label: string) => {
-                        this.#cppass.insertDebugMarker(label)
+                        computepass.insertDebugMarker(label)
                     }
         }
     }
@@ -107,9 +106,9 @@ export class ComputePassCreator {
         dynamicOffsetData?: ComputePassCreator.bindGroup.DYNAMIC_OFFSET_DATA
     ) {
         if (dynamicOffsetData) {
-            this.#cppass.setBindGroup(index, bindGroup.raw(), dynamicOffsets as Uint32Array, dynamicOffsetData.start, dynamicOffsetData.len);
+            this.computepass.setBindGroup(index, bindGroup.raw(), dynamicOffsets as Uint32Array, dynamicOffsetData.start, dynamicOffsetData.len);
         } else {
-            this.#cppass.setBindGroup(index, bindGroup.raw());
+            this.computepass.setBindGroup(index, bindGroup.raw());
         }
     }
     #pipeline?:ComputePipelineCreator
@@ -120,7 +119,7 @@ export class ComputePassCreator {
     async pipeline<T extends ComputePipelineCreator|DC_MEMBER<"ComputePipeline">>(pipeline:T):Promise<T>
     async pipeline<T extends ComputePipelineCreator|DC_MEMBER<"ComputePipeline">>(pipeline?:T):Promise<T|UNSURE<ComputePipelineCreator>>{
         if(typeof pipeline === "undefined")return this.#pipeline
-        this.#cppass.setPipeline(await pipeline.raw())
+        this.computepass.setPipeline(await pipeline.raw())
         return this.#pipeline = pipeline;
     }
     dispatchWorkgroup
@@ -128,7 +127,7 @@ export class ComputePassCreator {
      * Ends the underlying compute pass encoder.
      */
     end(){
-        this.#cppass.end()
+        this.computepass.end()
     }
     readonly debug
 }
