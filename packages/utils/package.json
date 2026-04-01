@@ -8,7 +8,7 @@
 		"terser": "^5.46.1",
 		"typescript": "^6.0.2"
 	},
-	"name": "@andromeda-3d/utils",
+	"name": "@agpu/utils",
 	"version": "0.2.0",
 	"scripts": {
 		"minify:js": "node minify-js.js",

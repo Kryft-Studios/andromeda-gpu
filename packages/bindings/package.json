@@ -21,7 +21,7 @@
 	"dependencies": {
 		"@webgpu/types": "^0.1.69"
 	},
-	"name":"@andromeda-gpu/bindings",
+	"name":"@agpu/bindings",
 	"version":"0.2.0",
 	"author": {
 		"name":"Kryft Studios",
