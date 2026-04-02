@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@agpu/helpers':
+        specifier: ^0.2.0
+        version: 0.2.0
       '@webgpu/types':
         specifier: ^0.1.69
         version: 0.1.69
@@ -44,6 +47,9 @@ importers:
         version: 5.9.3
 
 packages:
+
+  '@agpu/helpers@0.2.0':
+    resolution: {integrity: sha512-udO71RsMAw9SEwLET5OmWIvPN3ZXr2txHBsxw5VVEpPCmfuZYM+bb1hVklJPhBvdL4f2MMd2DhATxEGMaCMugQ==}
 
   '@eslint-community/eslint-utils@4.9.1':
     resolution: {integrity: sha512-phrYmNiYppR7znFEdqgfWHXR6NCkZEK7hwWDHZUjit/2/U0r6XvkDl0SYnoM51Hq7FhCGdLDT6zxCCOY1hexsQ==}
@@ -708,6 +714,8 @@ packages:
     engines: {node: '>=10'}
 
 snapshots:
+
+  '@agpu/helpers@0.2.0': {}
 
   '@eslint-community/eslint-utils@4.9.1(eslint@10.0.3)':
     dependencies:

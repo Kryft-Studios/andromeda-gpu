@@ -17,25 +17,26 @@
 		"minify:js": "node --no-warnings minify-js.js",
 		"minify:dts": "node --no-warnings minify-dts.js",
 		"minify:end": "node --no-warnings minify-end.js",
-		"prepublishOnly":"pnpm build"
+		"prepublishOnly": "pnpm build"
 	},
 	"dependencies": {
+		"@agpu/helpers": "^0.2.0",
 		"@webgpu/types": "^0.1.69"
 	},
-	"name":"@agpu/bindings",
-	"version":"0.2.1",
+	"name": "@agpu/bindings",
+	"version": "0.2.1",
 	"author": {
-		"name":"Kryft Studios",
+		"name": "Kryft Studios",
 		"email": "AfriaStudios@outlook.in",
-		"url":"https://github.com/Kryft-Studios"
+		"url": "https://github.com/Kryft-Studios"
 	},
 	"publishConfig": {
 		"access": "public"
 	},
-	"exports":{
-		".":{
-			"default":"./dist/index.js",
-			"types":"./dist/index.d.ts"
+	"exports": {
+		".": {
+			"default": "./dist/index.js",
+			"types": "./dist/index.d.ts"
 		}
 	}
 }
