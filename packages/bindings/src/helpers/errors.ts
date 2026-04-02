@@ -1,5 +1,4 @@
-import err from "@agpu/helpers/errors";
-
+import { AndromedaError } from "@agpu/helpers/errors";
 /**
  * Creates an {@link AndromedaError} with a standardized message format.
  */

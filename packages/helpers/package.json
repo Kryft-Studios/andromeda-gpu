@@ -9,7 +9,7 @@
 		"typescript": "^6.0.2"
 	},
 	"name": "@agpu/helpers",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"scripts": {
 		"minify:js": "node --no-warnings minify-js.js",
 		"minify:dts": "node --no-warnings minify-dts.js",

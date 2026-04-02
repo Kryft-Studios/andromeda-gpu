@@ -15,7 +15,7 @@ export interface LABEL {
 }
 
 
-export default function raw(key: string) {
+export function raw(key: string) {
     return function <T extends { new (...args: any[]): {} }>(
         target: T,
         context: ClassDecoratorContext

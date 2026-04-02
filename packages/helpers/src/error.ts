@@ -22,6 +22,6 @@ export class AndromedaError extends Error {
 /**
  * Creates an {@link AndromedaError} with a standardized message format.
  */
-export default function error(pkg:string,code: number, message: string, hint?: string): AndromedaError {
+export function error(pkg:string,code: number, message: string, hint?: string): AndromedaError {
     return new AndromedaError(pkg, code, message, hint);
 }
