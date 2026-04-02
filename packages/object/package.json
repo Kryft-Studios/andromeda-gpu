@@ -8,12 +8,12 @@
 		"terser": "^5.46.1",
 		"typescript": "^6.0.2"
 	},
-	"name": "andromeda-gpu",
-	"version": "0.2.1",
+	"name": "@agpu/object",
+	"version": "0.2.0",
 	"scripts": {
-		"minify:js": "node minify-js.js",
-		"minify:dts": "node minify-dts.js",
-		"minify:end": "node minify-end.js",
+		"minify:js": "node --no-warnings minify-js.js",
+		"minify:dts": "node --no-warnings minify-dts.js",
+		"minify:end": "node --no-warnings minify-end.js",
 		"tsc": "tsc",
 		"lint": "eslint",
 		"build": "node cmd/build.js",

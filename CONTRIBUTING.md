@@ -17,9 +17,11 @@ This CONTRIBUTING guide ensures consistency, performance, and readability across
 - **Async First:** Most WebGPU calls are async. If you miss an `await`, the engine crashes. Check your promises!
 
 ### Example
-```ts 
-await device.createRenderPipelineAsync // <- async
+
+```ts
+await device.createRenderPipelineAsync; // <- async
 ```
+
 > ## Do not use Prettier!
 >
 > We prefer VSCode's default `JavaScript and TypeScript Language Features` over Prettier.
@@ -34,36 +36,42 @@ await device.createRenderPipelineAsync // <- async
 
 ### Programming
 
-| Name            | Case               |
-| --------------- | ------------------ |
-| Types           | `UPPER_SNAKE_CASE` |
-| Interfaces      | `UPPER_SNAKE_CASE` |
-| Arguments       | `lowerCamelCase`   |
-| Classes         | `PascalCase`       |
-| Functions       | `lowerCamelCase`   |
-| Local Variables | `anyCase_YOUWant`  |
-| Variables       | `lowerCamelCase`   |
-| Namespaces      | `PascalCase`       |
-| Constants       | `UPPER_SNAKE_CASE` |
-| Local Constants | `anyCase_YOUWant`  |
-| Private Fields  | `#lowerCamelCase`  |
-| Enums           | `PascalCase`       |
-| Enum Members    | `PascalCase`       |
-| Decorators      | `lowerCamelCase`   |
+| Name            | Case                                                                    |
+| --------------- | ----------------------------------------------------------------------- |
+| Types           | `UPPER_SNAKE_CASE`                                                      |
+| Interfaces      | `UPPER_SNAKE_CASE`                                                      |
+| Arguments       | `lowerCamelCase`                                                        |
+| Classes         | `PascalCase`                                                            |
+| Functions       | `lowerCamelCase`                                                        |
+| Local Variables | `anyCase_YOUWant` (remain atleast 10% respective to readability please) |
+| Variables       | `lowerCamelCase`                                                        |
+| Namespaces      | `PascalCase`                                                            |
+| Constants       | `UPPER_SNAKE_CASE`                                                      |
+| Local Constants | `anyCase_YOUWant` (remain atleast 10% respective to readability please) |
+| Private Fields  | `#lowerCamelCase`                                                       |
+| Enums           | `PascalCase`                                                            |
+| Enum Members    | `PascalCase`                                                            |
+| Decorators      | `lowerCamelCase`                                                        |
 
 #### Example
-```ts
-let aEJAUHEAHEAHEAUHEUAHE_EaeEeaee = "" // this is a local variable
 
-export default function helloWorld(){console.log("Hello World!")} // This is a exported function. Therefore camel case
+```ts
+let THIS_IS_A_VARIABLE = ""; // this is a local variable and its name is FIRE 🔥🔥🔥
+
+export default function helloWorld() {
+  console.log("Hello World!");
+} // This is a exported function. Therefore you must encounter eslint.
 
 class Banana {
   // ...idk...
 }
 ```
+
 ### Exceptions
+
 #### If you are merging a interface or namespace with a class
-- You are allowed to do //eslint-disable-next-line and then type the interface or namespace with the name of the class.
+
+- You are allowed to do `// eslint-disable-next-line` and then type the interface or namespace with the name of the class.
 
 #### Unused variables are allowed but throw a warning.
 
@@ -78,6 +86,7 @@ class Banana {
 | `.json`           | `lowerCamelCase`   |
 | `.yaml`           | `lower-kebab-case` |
 | `.gitignore`      | (none)             |
+| `.npmignore` |(none)|
 
 ```ignore
 # UPPER_SNAKE_CASE_FILES
@@ -95,6 +104,7 @@ this-is-a-file.yaml
 # empty
 .gitignore
 ```
+
 ### Folders
 
 Folders follow `lower case`
@@ -122,12 +132,15 @@ A("types(labels): commit quick overview")
 ```
 
 ### Example
-<span style="color:cyan;font-weight:bold">refactor-add</span> (<span style="color:red;font-weight:bold"> agpu-core,agl-core </span>): Add absolutely nothing
+
+<span style="color:cyan;font-weight:bold">refactor-add</span>(<span style="color:red;font-weight:bold">bindings,utils</span>): Add absolutely nothing
 
 ## Creating helper folders for a file
+
 Whilst creating helper folders for a file, ensure that the folder's name is the exact file's name without the file exension.
 
 ### Example
+
 ```gitignore
 # This is very important file
 exist.js
@@ -140,15 +153,20 @@ exist
 ```
 
 # Creating a new package
+
 To create a new package, you can use the package creation cli
+
 ```bash
 cd packages
 node pkg.js
 ```
+
 It will prompt you with name, version, and whether to create the testing folder for the package in dev/ or not.
 
 ## Args
+
 1. Name
+
 This can either be prompted or passed directly in the command
 
 **Question:** "Enter package name: "
@@ -156,10 +174,13 @@ This can either be prompted or passed directly in the command
 Argument: `1`
 
 #### Example
+
 ```ps1
-node pkg.js something 
+node pkg.js something
 ```
+
 2. Version
+
 This can either be prompted or passed directly in the command
 
 **Question:** "Enter package version: "
@@ -167,19 +188,22 @@ This can either be prompted or passed directly in the command
 Argument: `2`
 
 #### Example
+
 ```ps1
 node pkg.js something 1.0.0
 ```
+
 3. Dev
+
 This can either be prompted or passed directly in the command
 Unlike the version or name arguments, this is asked after the package is built.
-
 
 **Question:** "Create a folder for this package in dev/? [y|n]"
 
 Argument: `3`
 
 #### Example
+
 ```ps1
 node pkg.js something 1.0.0 y
 ```
