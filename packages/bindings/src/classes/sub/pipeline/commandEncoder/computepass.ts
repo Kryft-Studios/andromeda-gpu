@@ -1,10 +1,10 @@
-import brand from "../../../../helpers/decorators/brand";
-import raw from "../../../../helpers/decorators/raw";
-import labeling from "../../../../helpers/decorators/labelling";
+import {brand} from "@agpu/helpers/decorators";
+import {raw} from "@agpu/helpers/decorators";
+import {labeling} from "@agpu/helpers/decorators";
 import error from "../../../../helpers/errors";
-import { BRAND, LABEL, RAW } from "../../../../helpers/types/decoratorHelpers";
+import { BRAND, LABEL, RAW } from "@agpu/helpers/decorators";
 import DC_MEMBER from "../../../../helpers/types/DCMember";
-import UNSURE from "../../../../helpers/types/unsure";
+import UNSURE from "@agpu/helpers/unsure";
 import BindGroupCreator from "../../data/bindGroup";
 import BufferCreator from "../../data/buffers";
 import ComputePipelineCreator from "../computePipeline";

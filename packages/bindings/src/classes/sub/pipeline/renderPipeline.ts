@@ -1,9 +1,9 @@
-import brand from "../../../helpers/decorators/brand";
+import {brand} from "@agpu/helpers/decorators";
 import error from "../../../helpers/errors";
-import labeling from "../../../helpers/decorators/labelling";
-import raw from "../../../helpers/decorators/raw";
-import { BRAND, RAW } from "../../../helpers/types/decoratorHelpers";
-import UNSURE from "../../../helpers/types/unsure";
+import {labeling} from "@agpu/helpers/decorators";
+import {raw} from "@agpu/helpers/decorators";
+import { BRAND, RAW } from "@agpu/helpers/decorators";
+import UNSURE from "@agpu/helpers/unsure";
 import DeviceControls from "../../main/device";
 import BindGroupLayoutCreator from "../data/bindGroupLayout";
 import ShaderModuleCreator from "../data/shaderModule";

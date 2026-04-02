@@ -2,7 +2,7 @@ import align from "../../../helpers/align";
 import defaults from "../../../helpers/defaults";
 import error from "../../../helpers/errors";
 import DC_MEMBER from "../../../helpers/types/DCMember";
-import UNSURE from "../../../helpers/types/unsure";
+import UNSURE from "@agpu/helpers/unsure";
 import BufferCreator from "./buffers";
 import TEXTURE_USAGE_OPTIONS, { getOptionsFromTextureUsage, getTextureUsage } from "./texture/textureUsageOptions";
 import TextureViewCreator from "./texture/textureView";

@@ -1,8 +1,8 @@
-import brand from "../../../helpers/decorators/brand";
-import labeling from "../../../helpers/decorators/labelling";
-import raw from "../../../helpers/decorators/raw";
+import {brand} from "@agpu/helpers/decorators";
+import {labeling} from "@agpu/helpers/decorators";
+import {raw} from "@agpu/helpers/decorators";
 import DC_MEMBER from "../../../helpers/types/DCMember";
-import { BRAND, LABEL, RAW } from "../../../helpers/types/decoratorHelpers";
+import { BRAND, LABEL, RAW } from "@agpu/helpers/decorators";
 import BindGroupLayoutCreator from "./bindGroupLayout";
 import BufferCreator from "./buffers";
 import SamplerCreator from "../pipeline/sampler";

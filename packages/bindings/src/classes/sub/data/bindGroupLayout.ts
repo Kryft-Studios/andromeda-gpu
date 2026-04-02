@@ -1,7 +1,7 @@
-import brand from "../../../helpers/decorators/brand";
-import labeling from "../../../helpers/decorators/labelling";
-import raw from "../../../helpers/decorators/raw";
-import { BRAND, LABEL, RAW } from "../../../helpers/types/decoratorHelpers";
+import {brand} from "@agpu/helpers/decorators";
+import {labeling} from "@agpu/helpers/decorators";
+import {raw} from "@agpu/helpers/decorators";
+import { BRAND, LABEL, RAW } from "@agpu/helpers/decorators";
 
 
 // eslint-disable-next-line

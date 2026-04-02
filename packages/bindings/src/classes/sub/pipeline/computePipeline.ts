@@ -1,7 +1,7 @@
-import brand from "../../../helpers/decorators/brand";
-import labeling from "../../../helpers/decorators/labelling";
-import raw from "../../../helpers/decorators/raw";
-import { BRAND, RAW } from "../../../helpers/types/decoratorHelpers";
+import {brand} from "@agpu/helpers/decorators";
+import {labeling} from "@agpu/helpers/decorators";
+import {raw} from "@agpu/helpers/decorators";
+import { BRAND, RAW } from "@agpu/helpers/decorators";
 import DC_MEMBER from "../../../helpers/types/DCMember";
 import PipelineLayoutCreator from "./pipelineLayout";
 import ShaderModuleCreator from "../data/shaderModule";

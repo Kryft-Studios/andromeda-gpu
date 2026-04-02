@@ -1,12 +1,12 @@
 import error from "../../../../helpers/errors";
 import DC_MEMBER from "../../../../helpers/types/DCMember";
-import UNSURE from "../../../../helpers/types/unsure";
+import UNSURE from "@agpu/helpers/unsure";
 import QuerySetCreator from "../querySet";
 import TextureCreator from "../../data/texture";
 import TextureViewCreator from "../../data/texture/textureView";
 import RenderEncoderBase, { RENDER_ENCODER_BIND_GROUP_DYNAMIC_OFFSET_DATA } from "./renderEncoderBase";
 import RenderBundleCreator from "../renderBundleEncoder/renderBundle";
-import brand from "../../../../helpers/decorators/brand";
+import {brand} from "@agpu/helpers/decorators";
 /**
  * Wrapper around {@link GPURenderPassEncoder} with cached state helpers and a
  * higher-level API consistent with the rest of the bindings package.

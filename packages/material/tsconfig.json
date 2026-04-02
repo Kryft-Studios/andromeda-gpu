@@ -6,15 +6,13 @@
 
     "rootDir": "src",
     "outDir": "dist",
-    "declaration": false,
+    "declaration": true,
     "strict": true,
 
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noEmit": false,
-    "types": ["@webgpu/types"],
-    "lib": ["Decorators","DOM", "DOM.Iterable", "DOM.AsyncIterable", "ES2024"],
-    
+    "lib": ["Decorators","DOM", "DOM.Iterable", "DOM.AsyncIterable", "ES2024"]
   },
   "include": ["src"]
 }

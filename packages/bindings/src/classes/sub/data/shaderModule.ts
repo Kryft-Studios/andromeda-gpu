@@ -1,9 +1,9 @@
-import brand from "../../../helpers/decorators/brand";
-import labeling from "../../../helpers/decorators/labelling";
-import raw from "../../../helpers/decorators/raw";
+import {brand} from "@agpu/helpers/decorators";
+import {labeling} from "@agpu/helpers/decorators";
+import {raw} from "@agpu/helpers/decorators";
 import getBindGroups from "../../../helpers/shaderRegex"
-import { BRAND, LABEL, RAW } from "../../../helpers/types/decoratorHelpers";
-import UNSURE from "../../../helpers/types/unsure"
+import { BRAND, LABEL, RAW } from "@agpu/helpers/decorators";
+import UNSURE from "@agpu/helpers/unsure"
 
 /**
  * Options used when creating a shader module from WGSL source.

@@ -1,8 +1,8 @@
 import error from "../../../../helpers/errors";
-import labeling from "../../../../helpers/decorators/labelling";
-import raw from "../../../../helpers/decorators/raw";
+import {labeling} from "@agpu/helpers/decorators";
+import {raw} from "@agpu/helpers/decorators";
 import DC_MEMBER from "../../../../helpers/types/DCMember";
-import UNSURE from "../../../../helpers/types/unsure";
+import UNSURE from "@agpu/helpers/unsure";
 import BindGroupCreator from "../../data/bindGroup";
 import BufferCreator from "../../data/buffers";
 import IndirectBufferCreator, { INDIRECT_BUFFER_BINDING_OPTIONS, INDIRECT_BUFFER_OPTIONS } from "./renderPass/indirectBuffer";

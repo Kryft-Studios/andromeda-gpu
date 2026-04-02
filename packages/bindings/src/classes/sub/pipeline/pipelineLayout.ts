@@ -1,8 +1,8 @@
 import DeviceControls from "../../main/device"
-import brand from "../../../helpers/decorators/brand";
-import labeling from "../../../helpers/decorators/labelling";
-import raw from "../../../helpers/decorators/raw";
-import { BRAND, LABEL, RAW } from "../../../helpers/types/decoratorHelpers";
+import {brand} from "@agpu/helpers/decorators";
+import {labeling} from "@agpu/helpers/decorators";
+import {raw} from "@agpu/helpers/decorators";
+import { BRAND, LABEL, RAW } from "@agpu/helpers/decorators";
 import BindGroupLayoutCreator from "../data/bindGroupLayout";
 // eslint-disable-next-line
 export interface PipelineLayoutCreator extends RAW<GPUPipelineLayout>, BRAND<"PipelineLayoutCreator">,LABEL {}

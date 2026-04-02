@@ -1,7 +1,7 @@
-import brand from "../../helpers/decorators/brand";
+import {brand} from "@agpu/helpers/decorators";
 import error from "../../helpers/errors";
-import raw from "../../helpers/decorators/raw";
-import { BRAND, RAW } from "../../helpers/types/decoratorHelpers";
+import {raw} from "@agpu/helpers/decorators";
+import { BRAND, RAW } from "@agpu/helpers/decorators";
 import TextureCreator from "../sub/data/texture";
 import DeviceControls from "./device";
 @raw("ctx")
@@ -14,10 +14,11 @@ export class ContextControls {
     configure(config:CANVAS_CONFIG){
         if(!config.device)throw error(31,"Canvas configuration requires a DeviceControls instance.","Pass the device returned by AdapterControls.device(...).");
         if(!config.format)throw error(32,"Canvas configuration requires a GPUTextureFormat.","Use WebGPUControls.preferredCanvasFormat() or another valid GPUTextureFormat.");
-        let a:GPUCanvasConfiguration = {
+    
+        let a = {
             ...config,
             device:config.device.raw()
-        }
+        } as GPUCanvasConfiguration
         return this.ctx.configure(a)
     }
     unconfigure(){return this.ctx.unconfigure()}

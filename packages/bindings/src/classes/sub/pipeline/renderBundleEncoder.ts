@@ -1,5 +1,5 @@
-import brand from "../../../helpers/decorators/brand";
-import { BRAND, LABEL, RAW } from "../../../helpers/types/decoratorHelpers";
+import {brand} from "@agpu/helpers/decorators";
+import { BRAND, LABEL, RAW } from "@agpu/helpers/decorators";
 import RenderEncoderBase from "./commandEncoder/renderEncoderBase";
 import RenderBundleCreator from "./renderBundleEncoder/renderBundle";
 

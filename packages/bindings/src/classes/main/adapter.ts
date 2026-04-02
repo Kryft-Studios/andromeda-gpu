@@ -1,7 +1,7 @@
-import brand from "../../helpers/decorators/brand";
+import {brand} from "@agpu/helpers/decorators";
 import error from "../../helpers/errors";
-import raw from "../../helpers/decorators/raw";
-import { BRAND, RAW } from "../../helpers/types/decoratorHelpers";
+import {raw} from "@agpu/helpers/decorators";
+import { BRAND, RAW } from "@agpu/helpers/decorators";
 import DeviceControls from "./device"
 
 export interface ADAPTER_CONTROLS extends BRAND<"AdapterControls">,RAW<"adapter"> {}

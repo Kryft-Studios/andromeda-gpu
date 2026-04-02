@@ -1,6 +1,6 @@
-import brand from "../../helpers/decorators/brand";
+import {brand}from "@agpu/helpers/decorators";
 import error from "../../helpers/errors";
-import { BRAND } from "../../helpers/types/decoratorHelpers";
+import { BRAND } from "@agpu/helpers/decorators";
 import AdapterControls from "./adapter";
 import { ContextControls } from "./context";
 

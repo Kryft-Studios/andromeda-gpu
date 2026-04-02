@@ -1,11 +1,10 @@
 import defaults from "../../../helpers/defaults"
-import align from "../../../helpers/align";
 import error from "../../../helpers/errors";
-import UNSURE from "../../../helpers/types/unsure";
+import UNSURE from "@agpu/helpers/unsure";
 import BUFFER_USAGE_OPTIONS, { getOptionsFromUsage } from "./buffers/bufferUsageOptions";
 import { getOptionsFromTextureUsage } from "./texture/textureUsageOptions";
 import { getBufferUsage } from "./buffers/bufferUsageOptions";
-
+import align from "../../../helpers/align";
 /**
  * Construction options for {@link BufferCreator}.
  */

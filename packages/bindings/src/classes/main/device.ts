@@ -1,3 +1,4 @@
+//ignore vscode ide errors here
 import BindGroupLayoutCreator from "../sub/data/bindGroupLayout";
 import BufferCreator, { BUFFER_CONSTRUCTION_OPTIONS } from "../sub/data/buffers";
 import PipelineLayoutCreator, { PIPELINE_LAYOUT_OPTIONS } from "../sub/pipeline/pipelineLayout";
@@ -10,9 +11,9 @@ import ComputePipelineCreator, { COMPUTE_PIPELINE_OPTION } from "../sub/pipeline
 import error from "../../helpers/errors";
 import QuerySetCreator from "../sub/pipeline/querySet";
 import RenderBundleEncoderCreator  from "../sub/pipeline/renderBundleEncoder";
-import brand from "../../helpers/decorators/brand";
-import { BRAND, RAW } from "../../helpers/types/decoratorHelpers";
-import raw from "../../helpers/decorators/raw";
+import {brand} from "@agpu/helpers/decorators";
+import { BRAND, RAW } from "@agpu/helpers/decorators";
+import {raw} from "@agpu/helpers/decorators";
 import CommandBufferCreator from "../sub/data/commandbuffer";
 import CommandEncoderCreator from "../sub/pipeline/commandEncoder";
 
@@ -50,7 +51,7 @@ export class DeviceControls {
                 });
                 return creator;
             }
-        }
+        };
         const self = this
         this.Texture = class Texture extends TextureCreator {
             constructor(options: TEXTURE_CREATOR_OPTIONS) {
@@ -142,7 +143,7 @@ export class DeviceControls {
             }
         }
 
-        this.BindGroup = class extends BindGroupCreator {
+        this.BindGroup = class BindGroup extends BindGroupCreator {
             constructor(options: BIND_GROUP_OPTIONS) {
                 super(device, options)
             }
@@ -150,7 +151,7 @@ export class DeviceControls {
                 return new BindGroupCreator(device, bindGroup)
             }
         }
-        this.ComputePipeline = class extends ComputePipelineCreator {
+        this.ComputePipeline = class ComputePipeline extends ComputePipelineCreator {
             constructor(options: COMPUTE_PIPELINE_OPTION) {
                 super(device, options)
             }
@@ -158,17 +159,17 @@ export class DeviceControls {
                 return new ComputePipelineCreator(device, computePipeline)
             }
         }
-        this.QuerySet = class extends QuerySetCreator {
+        this.QuerySet = class QuerySet extends QuerySetCreator {
             constructor(options:GPUQuerySetDescriptor){
                 super(device,options)
             }
         }
-        this.RenderBundleEncoder = class extends RenderBundleEncoderCreator {
+        this.RenderBundleEncoder = class RenderBundleEncoder extends RenderBundleEncoderCreator {
             constructor(options:GPURenderBundleEncoderDescriptor){
                 super(device,device.createRenderBundleEncoder(options))
             }
         }
-        this.CommandEncoder = class extends CommandEncoderCreator {
+        this.CommandEncoder = class CommandEncoder extends CommandEncoderCreator {
             constructor(label?:string) {
                 super(device,label)
             }
@@ -189,9 +190,10 @@ export class DeviceControls {
             this.#device.queue.onSubmittedWorkDone().then(()=>fn())
         }
     }
+
     #device: GPUDevice;
     device:GPUDevice
-    readonly Buffer
+    readonly Buffer;
     readonly Texture
     readonly Sampler
     readonly ShaderModule
