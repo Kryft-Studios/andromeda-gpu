@@ -13,7 +13,7 @@ async function processDir(dir) {
             const code = readFileSync(fullPath, 'utf8');
             const minified = await minify(code, {
     compress: {
-        ecma: 2022,
+        ecma: 2024,
         passes: 3,
         unsafe: true,
         pure_getters: true,

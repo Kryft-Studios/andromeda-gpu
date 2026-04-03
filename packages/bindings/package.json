@@ -24,7 +24,7 @@
 		"@webgpu/types": "^0.1.69"
 	},
 	"name": "@agpu/bindings",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"author": {
 		"name": "Kryft Studios",
 		"email": "AfriaStudios@outlook.in",
