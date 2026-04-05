@@ -116,7 +116,7 @@ A commit in this repository is made of two parts
 
 ```mermaid
 flowchart LR
-A("types(labels): commit quick overview")
+A("types(labels) (& other)?: commit quick overview")
   A-->B("**types**: This includes the types of changes made")
     B-->E("Seperated by a **-**")
     B-->F("Allows only specific types")
@@ -129,6 +129,7 @@ A("types(labels): commit quick overview")
     C-->L("Seperated by **,**")
   A-->D("**commit quick overview**: Descripts the changes done in breif")
     D-->M("Seperated by **,**")
+  A-->N("& other?: Add this if there is too many changes and you cannot document them all.")
 ```
 
 ### Example
@@ -207,3 +208,18 @@ Argument: `3`
 ```ps1
 node pkg.js something 1.0.0 y
 ```
+
+## Avoid Class Explosion
+
+Do not introduce new classes unless:
+- it significantly reduces complexity for the user
+- it cannot be solved with functions or composition
+
+Prefer:
+- functions
+- internal modules
+- data-driven patterns
+
+Over:
+- inheritance
+- micro-classes

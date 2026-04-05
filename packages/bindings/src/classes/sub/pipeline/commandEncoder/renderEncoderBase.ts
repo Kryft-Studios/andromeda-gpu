@@ -1,3 +1,5 @@
+/// <reference types="@webgpu/types" />
+
 import error from "../../../../helpers/errors";
 import {labeling} from "@agpu/helpers/decorators";
 import {raw} from "@agpu/helpers/decorators";
@@ -7,9 +9,9 @@ import BindGroupCreator from "../../data/bindGroup";
 import BufferCreator from "../../data/buffers";
 import IndirectBufferCreator, { INDIRECT_BUFFER_BINDING_OPTIONS, INDIRECT_BUFFER_OPTIONS } from "./renderPass/indirectBuffer";
 import RenderPipelineCreator from "../renderPipeline";
-
+import "@webgpu/types";
 export interface INDIRECT_BUFFER_CONSTRUCTOR {
-    new(options: INDIRECT_BUFFER_OPTIONS): IndirectBufferCreator;
+    new(options: INDIRECT_BUFFER_OPTIONS):IndirectBufferCreator;
     readonly len: number;
     from(buffer: BufferCreator | GPUBuffer): Promise<IndirectBufferCreator>;
 }

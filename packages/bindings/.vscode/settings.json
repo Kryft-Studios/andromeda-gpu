@@ -1,0 +1,5 @@
+{
+  "js/ts.suggest.includeAutomaticOptionalChainCompletions": false,
+  "js/ts.includeCompletionsWithInsertText": false
+
+}

@@ -9,7 +9,7 @@
 		"typescript": "^6.0.2"
 	},
 	"name": "@agpu/helpers",
-	"version": "0.2.3",
+	"version": "0.2.5",
 	"scripts": {
 		"minify:js": "node --no-warnings minify-js.js",
 		"minify:dts": "node --no-warnings minify-dts.js",
@@ -34,6 +34,15 @@
 		"./unsure":{
 			"types":"./dist/null.d.ts",
 			"default":"./dist/null.js"
+		},
+		"./greaterthan": {
+			"types":"./dist/greaterthan.d.ts",
+			"default":"./dist/greaterthan.js"
 		}
-	}
+	},
+	"keywords": ["helpers","andromeda","types"],
+	"repository": {
+		"url": "https://github.com/Kryft-Studios/andromeda-gpu"
+	},
+	"homepage": "https://github.com/Kryft-Studios/andromeda-gpu"
 }

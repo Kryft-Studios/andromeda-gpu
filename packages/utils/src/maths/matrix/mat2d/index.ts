@@ -47,6 +47,15 @@ class Matrix2D {
         return [1, 0, 0, 1, 0, 0];
     }
 
+    get x() { return this.#mat2d[0]; }
+    set x(value: number) { this.#mat2d[0] = value; }
+    get y() { return this.#mat2d[1]; }
+    set y(value: number) { this.#mat2d[1] = value; }
+    get z() { return this.#mat2d[2]; }
+    set z(value: number) { this.#mat2d[2] = value; }
+    get w() { return this.#mat2d[3]; }
+    set w(value: number) { this.#mat2d[3] = value; }
+
     raw() { return this.#mat2d; }
     clone() { return Matrix2D.clone(this); }
     copy(other: Matrix2D) { return Matrix2D.copy(this, other); }

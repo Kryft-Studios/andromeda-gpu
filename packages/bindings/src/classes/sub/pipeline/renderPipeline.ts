@@ -1,3 +1,5 @@
+/// <reference types="@webgpu/types" />
+
 import {brand} from "@agpu/helpers/decorators";
 import error from "../../../helpers/errors";
 import {labeling} from "@agpu/helpers/decorators";
@@ -8,7 +10,7 @@ import DeviceControls from "../../main/device";
 import BindGroupLayoutCreator from "../data/bindGroupLayout";
 import ShaderModuleCreator from "../data/shaderModule";
 import PipelineLayoutCreator from "./pipelineLayout";
-
+import "@webgpu/types";
 const defaultPrimitiveState: GPUPrimitiveState = {
     topology: "triangle-list",
     frontFace: "ccw",

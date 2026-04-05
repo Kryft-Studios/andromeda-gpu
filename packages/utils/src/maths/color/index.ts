@@ -5,33 +5,17 @@ class Color {
         this.#lookup = obj
     }
 
-    r(): number
-    r(n: number): this
-    r(n?: number): number | this {
-        if (typeof n === "undefined") return this.#lookup.r
-        this.#lookup.r = Color.clamp(n); return this
-    }
+    get r() { return this.#lookup.r; }
+    set r(v: number) { this.#lookup.r = Color.clamp(v); }
 
-    g(): number
-    g(n: number): this
-    g(n?: number): number | this {
-        if (typeof n === "undefined") return this.#lookup.g
-        this.#lookup.g = Color.clamp(n); return this
-    }
+    get g() { return this.#lookup.g; }
+    set g(v: number) { this.#lookup.g = Color.clamp(v); }
 
-    b(): number
-    b(n: number): this
-    b(n?: number): number | this {
-        if (typeof n === "undefined") return this.#lookup.b
-        this.#lookup.b = Color.clamp(n); return this
-    }
+    get b() { return this.#lookup.b; }
+    set b(v: number) { this.#lookup.b = Color.clamp(v); }
 
-    a(): number
-    a(n: number): this
-    a(n?: number): number | this {
-        if (typeof n === "undefined") return this.#lookup.a
-        this.#lookup.a = Color.clamp(n); return this
-    }
+    get a() { return this.#lookup.a; }
+    set a(v: number) { this.#lookup.a = Color.clamp(v); }
 
     static hex(hex: Color.HEX_FORMAT) {
         if (!Color.isHex(hex)) throw "Invalid hex"
@@ -60,7 +44,7 @@ class Color {
             r: rgb.r,
             g: rgb.g,
             b: rgb.b,
-            a: Math.round(rgb.a * 255)
+            a: Math.round(rgb.a * 255) 
         });
     }
     object() {
@@ -100,11 +84,11 @@ class Color {
         return `#${toHex(r)}${toHex(g)}${toHex(b)}${toHex(a)}`;
     }
 
-    array():[number,number,number,number] {
+    array(): [number, number, number, number] {
         return [this.#lookup.r, this.#lookup.g, this.#lookup.b, this.#lookup.a]
     }
 
-    hsla = Object.assign(():{h:number,s:number,l:number,a:number}=>{
+    hsla = Object.assign((): { h: number, s: number, l: number, a: number } => {
         const { r, g, b } = this.#lookup
         const max = Math.max(r, g, b);
         const min = Math.min(r, g, b);
@@ -127,33 +111,33 @@ class Color {
             h: h * 360,
             s: s * 100,
             l: l * 100,
-            a: this.#lookup.a
+            a: this.#lookup.a / 255
         };
-    },{
-        array:():[number,number,number,number]=>{
-        return Object.values(this.hsla()) as [number,number,number,number]
-    }
+    }, {
+        array: (): [number, number, number, number] => {
+            return Object.values(this.hsla()) as [number, number, number, number]
+        }
     })
 
-    unitRgba = Object.assign(()=>{
+    unitRgba = Object.assign(() => {
         return {
             r: this.#lookup.r / 255,
             g: this.#lookup.g / 255,
             b: this.#lookup.b / 255,
-            a: this.#lookup.a
+            a: this.#lookup.a / 255
         }
     }, {
-        array:():[number,number,number,number]=>{
-        return [this.#lookup.r / 255,
-        this.#lookup.g / 255,
-        this.#lookup.b / 255,
-        this.#lookup.a
-        ]
-    }
+        array: (): [number, number, number, number] => {
+            return [this.#lookup.r / 255,
+            this.#lookup.g / 255,
+            this.#lookup.b / 255,
+            this.#lookup.a / 255
+            ]
+        }
     })
 
-    hsl = Object.assign(()=>{const {h,s,l} = this.hsla();return {h,s,l}},{
-        array:():[number,number,number]=>{const {h,s,l}=this.hsla();return [h,s,l]}
+    hsl = Object.assign(() => { const { h, s, l } = this.hsla(); return { h, s, l } }, {
+        array: (): [number, number, number] => { const { h, s, l } = this.hsla(); return [h, s, l] }
     })
 }
 namespace Color {

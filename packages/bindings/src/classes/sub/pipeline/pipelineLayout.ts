@@ -1,9 +1,12 @@
+/// <reference types="@webgpu/types" />
+
 import DeviceControls from "../../main/device"
 import {brand} from "@agpu/helpers/decorators";
 import {labeling} from "@agpu/helpers/decorators";
 import {raw} from "@agpu/helpers/decorators";
 import { BRAND, LABEL, RAW } from "@agpu/helpers/decorators";
 import BindGroupLayoutCreator from "../data/bindGroupLayout";
+import "@webgpu/types";
 // eslint-disable-next-line
 export interface PipelineLayoutCreator extends RAW<GPUPipelineLayout>, BRAND<"PipelineLayoutCreator">,LABEL {}
 /**

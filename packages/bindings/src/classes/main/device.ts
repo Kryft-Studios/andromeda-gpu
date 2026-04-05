@@ -1,3 +1,5 @@
+/// <reference types="@webgpu/types" />
+
 //ignore vscode ide errors here
 import BindGroupLayoutCreator from "../sub/data/bindGroupLayout";
 import BufferCreator, { BUFFER_CONSTRUCTION_OPTIONS } from "../sub/data/buffers";
@@ -10,13 +12,14 @@ import BindGroupCreator, { BIND_GROUP_OPTIONS } from "../sub/data/bindGroup";
 import ComputePipelineCreator, { COMPUTE_PIPELINE_OPTION } from "../sub/pipeline/computePipeline";
 import error from "../../helpers/errors";
 import QuerySetCreator from "../sub/pipeline/querySet";
+
 import RenderBundleEncoderCreator  from "../sub/pipeline/renderBundleEncoder";
 import {brand} from "@agpu/helpers/decorators";
 import { BRAND, RAW } from "@agpu/helpers/decorators";
 import {raw} from "@agpu/helpers/decorators";
 import CommandBufferCreator from "../sub/data/commandbuffer";
 import CommandEncoderCreator from "../sub/pipeline/commandEncoder";
-
+import "@webgpu/types";
 // eslint-disable-next-line
 export interface DeviceControls extends BRAND<"DeviceControls">,RAW<GPUDevice>{};
 /**
@@ -33,6 +36,7 @@ export class DeviceControls {
     constructor(device: GPUDevice) {
         this.#device = device;
         this.device=device;
+        
         this.Buffer = class Buffer extends BufferCreator {
             constructor(options?: BUFFER_CONSTRUCTION_OPTIONS) {
                 super(device, options)
@@ -51,7 +55,7 @@ export class DeviceControls {
                 });
                 return creator;
             }
-        };
+        }
         const self = this
         this.Texture = class Texture extends TextureCreator {
             constructor(options: TEXTURE_CREATOR_OPTIONS) {
@@ -83,7 +87,7 @@ export class DeviceControls {
             static from(gputexture: GPUTexture) {
                 return new TextureCreator(device, gputexture)
             }
-            static async fromBitmap(bitmap: ImageBitmap) {
+            static fromBitmap(bitmap: ImageBitmap) {
                 const texture = new self.Texture({
                     size: [bitmap.width, bitmap.height, 1],
                     format: 'rgba8unorm',
@@ -127,13 +131,13 @@ export class DeviceControls {
             static from(grp: GPURenderPipeline) {
                 return new RenderPipelineCreator(device, grp)
             }
-        }
+        } 
         this.BindGroupLayout = class BindGroupLayout extends BindGroupLayoutCreator {
             constructor(options: GPUBindGroupLayoutDescriptor) {
                 super(device, options)
             }
             static from(bgl: GPUBindGroupLayout) { return new BindGroupLayoutCreator(device, bgl) }
-        }
+        } 
         this.PipelineLayout = class PipelineLayout extends PipelineLayoutCreator {
             constructor(options: PIPELINE_LAYOUT_OPTIONS = {}) {
                 super(device, options)
@@ -141,7 +145,7 @@ export class DeviceControls {
             static from(pl: GPUPipelineLayout) {
                 return new PipelineLayoutCreator(device, pl)
             }
-        }
+        } 
 
         this.BindGroup = class BindGroup extends BindGroupCreator {
             constructor(options: BIND_GROUP_OPTIONS) {
@@ -163,12 +167,15 @@ export class DeviceControls {
             constructor(options:GPUQuerySetDescriptor){
                 super(device,options)
             }
-        }
+            static from(qs:GPUQuerySet){
+                return new QuerySetCreator(device,qs)
+            }
+        } 
         this.RenderBundleEncoder = class RenderBundleEncoder extends RenderBundleEncoderCreator {
             constructor(options:GPURenderBundleEncoderDescriptor){
                 super(device,device.createRenderBundleEncoder(options))
             }
-        }
+        } 
         this.CommandEncoder = class CommandEncoder extends CommandEncoderCreator {
             constructor(label?:string) {
                 super(device,label)
@@ -176,7 +183,7 @@ export class DeviceControls {
             static from(cmdencoder:GPUCommandEncoder) {
                 return new CommandEncoderCreator(device,cmdencoder)
             }
-        }
+        } 
     }
     readonly queue = {
         submit:(commandBuffers:CommandBufferCreator[])=>{

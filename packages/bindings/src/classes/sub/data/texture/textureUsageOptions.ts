@@ -1,3 +1,5 @@
+/// <reference types="@webgpu/types" />
+
 /**
  * Structured texture usage flags used by this package.
  */
@@ -7,7 +9,7 @@ interface TEXTURE_COPY_OPTIONS {
     /**Whether the texture can be read while writing. */
     write?:boolean
 }
-
+import "@webgpu/types";
 interface TEXTURE_BINDING_OPTIONS {
     /**Whether the texture can be bound as a storage texture */
     storage?:boolean;

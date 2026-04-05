@@ -1,3 +1,5 @@
+/// <reference types="@webgpu/types" />
+
 import align from "../../../helpers/align";
 import defaults from "../../../helpers/defaults";
 import error from "../../../helpers/errors";
@@ -6,7 +8,7 @@ import UNSURE from "@agpu/helpers/unsure";
 import BufferCreator from "./buffers";
 import TEXTURE_USAGE_OPTIONS, { getOptionsFromTextureUsage, getTextureUsage } from "./texture/textureUsageOptions";
 import TextureViewCreator from "./texture/textureView";
-
+import "@webgpu/types";
 /**
  * Public texture construction options.
  */

@@ -1,3 +1,5 @@
+/// <reference types="@webgpu/types" />
+
 import DeviceControls from "../../classes/main/device";
 
 type CLASS_KEYS<T> = {

@@ -1,0 +1,30 @@
+{
+	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "^8.58.0",
+		"@typescript-eslint/parser": "^8.58.0",
+		"dts-minify": "^0.3.3",
+		"eslint": "^10.2.0",
+		"node": "^25.9.0",
+		"terser": "^5.46.1",
+		"typescript": "^6.0.2"
+	},
+	"name": "@agpu/texture",
+	"version": "0.2.0",
+	"scripts": {
+		"minify:js": "node --no-warnings minify-js.js",
+		"minify:dts": "node --no-warnings minify-dts.js",
+		"minify:end": "node --no-warnings minify-end.js",
+		"tsc": "tsc",
+		"lint": "eslint",
+		"build": "node cmd/build.js",
+		"prepublishOnly": "pnpm build"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"dependencies": {
+		"@agpu/bindings": "^0.2.15",
+		"@agpu/helpers": "^0.2.5",
+		"@agpu/utils": "^1.0.4"
+	}
+}

@@ -1,3 +1,5 @@
+/// <reference types="@webgpu/types" />
+
 /**
  * Fine-grained copy flags for buffer usage construction.
  */
@@ -7,7 +9,7 @@ export interface BUFFER_COPY_OPTIONS {
     /**Whether the buffer can be written to while being copied */
     write?: boolean;
 }
-
+import "@webgpu/types";
 export interface BUFFER_BINDING_OPTIONS {
     /**Whether the buffer can be bound as a vertex buffer */
     vertex?: boolean;

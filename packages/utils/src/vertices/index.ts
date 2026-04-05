@@ -13,12 +13,7 @@ function vertices(arr:number[][][],layout:Attribute.OPTIONS[]){
             size:layout[i].size,
             offset:currOffset,
             location:i,
-            type: Object.assign("float32",{
-                webgpu:"float32x"+layout[i].size,
-                webgl:{
-                    enum:5126 as WebGL2RenderingContext["FLOAT"]
-                }
-            })
+            type: "float32"
         })
         currOffset += layout[i].size * 4;
     }

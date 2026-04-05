@@ -48,6 +48,15 @@ class Matrix2 {
         return [1, 0, 0, 1];
     }
 
+    get x() { return this.#mat2[0]; }
+    set x(value: number) { this.#mat2[0] = value; }
+    get y() { return this.#mat2[1]; }
+    set y(value: number) { this.#mat2[1] = value; }
+    get z() { return this.#mat2[2]; }
+    set z(value: number) { this.#mat2[2] = value; }
+    get w() { return this.#mat2[3]; }
+    set w(value: number) { this.#mat2[3] = value; }
+
     raw() { return this.#mat2; }
     clone() { return Matrix2.clone(this); }
     copy(other: Matrix2) { return Matrix2.copy(this, other); }

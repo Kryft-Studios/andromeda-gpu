@@ -24,7 +24,7 @@
 		"@webgpu/types": "^0.1.69"
 	},
 	"name": "@agpu/bindings",
-	"version": "0.2.3",
+	"version": "0.2.15",
 	"author": {
 		"name": "Kryft Studios",
 		"email": "AfriaStudios@outlook.in",
@@ -34,9 +34,14 @@
 		"access": "public"
 	},
 	"exports": {
-		".": {
-			"default": "./dist/index.js",
-			"types": "./dist/index.d.ts"
-		}
-	}
+	 	".": {
+	 		"default": "./dist/index.js",
+	 		"types": "./dist/index.d.ts"
+	 	}
+	},
+	"keywords": ["webgpu","3d","graphics","andromeda","gpu","modular","bindings","rendering"],
+	"repository": {
+		"url": "https://github.com/Kryft-Studios/andromeda-gpu"
+	},
+	"homepage": "https://github.com/Kryft-Studios/andromeda-gpu"
 }

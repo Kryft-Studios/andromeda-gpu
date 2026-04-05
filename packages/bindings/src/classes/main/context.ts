@@ -1,9 +1,13 @@
+/// <reference types="@webgpu/types" />
+
 import {brand} from "@agpu/helpers/decorators";
 import error from "../../helpers/errors";
 import {raw} from "@agpu/helpers/decorators";
 import { BRAND, RAW } from "@agpu/helpers/decorators";
 import TextureCreator from "../sub/data/texture";
 import DeviceControls from "./device";
+import "@webgpu/types";
+
 @raw("ctx")
 @brand("ContextControls")
 export class ContextControls {

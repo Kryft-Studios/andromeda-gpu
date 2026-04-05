@@ -1,3 +1,4 @@
+/// <reference types="@webgpu/types" />
 /**
  * Re-export of the native `GPUBufferUsage` enum-like object.
  */

@@ -219,36 +219,36 @@ class Vector4 {
         return { x: 0, y: 0, z: 0, w: 0 };
     }
 
-    x(): number;
-    x(num: number): this;
-    x(num?: number): this | number {
-        if (typeof num === "undefined") return this.#vec4[0];
-        this.#vec4[0] = num;
-        return this;
+    get x() {
+        return this.#vec4[0];
     }
 
-    y(): number;
-    y(num: number): this;
-    y(num?: number): this | number {
-        if (typeof num === "undefined") return this.#vec4[1];
-        this.#vec4[1] = num;
-        return this;
+    set x(value: number) {
+        this.#vec4[0] = value;
     }
 
-    z(): number;
-    z(num: number): this;
-    z(num?: number): this | number {
-        if (typeof num === "undefined") return this.#vec4[2];
-        this.#vec4[2] = num;
-        return this;
+    get y() {
+        return this.#vec4[1];
     }
 
-    w(): number;
-    w(num: number): this;
-    w(num?: number): this | number {
-        if (typeof num === "undefined") return this.#vec4[3];
-        this.#vec4[3] = num;
-        return this;
+    set y(value: number) {
+        this.#vec4[1] = value;
+    }
+
+    get z() {
+        return this.#vec4[2];
+    }
+
+    set z(value: number) {
+        this.#vec4[2] = value;
+    }
+
+    get w() {
+        return this.#vec4[3];
+    }
+
+    set w(value: number) {
+        this.#vec4[3] = value;
     }
 
     raw() {

@@ -1,9 +1,12 @@
+/// <reference types="@webgpu/types" />
+
 import {brand} from "@agpu/helpers/decorators";
 import {labeling} from "@agpu/helpers/decorators";
 import {raw} from "@agpu/helpers/decorators";
 import getBindGroups from "../../../helpers/shaderRegex"
 import { BRAND, LABEL, RAW } from "@agpu/helpers/decorators";
 import UNSURE from "@agpu/helpers/unsure"
+import "@webgpu/types";
 
 /**
  * Options used when creating a shader module from WGSL source.

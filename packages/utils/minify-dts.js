@@ -1,3 +1,5 @@
+
+process.exit(0)
 import { createMinifier } from 'dts-minify';
 import * as ts from 'typescript';
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'fs';

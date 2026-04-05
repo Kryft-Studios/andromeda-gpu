@@ -12,7 +12,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noEmit": false,
-    "lib": ["Decorators","DOM", "DOM.Iterable", "DOM.AsyncIterable", "ES2024"]
+    "lib": ["Decorators","DOM", "DOM.Iterable", "DOM.AsyncIterable", "ESNext"]
   },
   "include": ["src"]
 }

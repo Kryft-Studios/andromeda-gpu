@@ -1,7 +1,10 @@
+/// <reference types="@webgpu/types" />
+
 import {brand} from "@agpu/helpers/decorators";
 import {labeling} from "@agpu/helpers/decorators";
 import {raw} from "@agpu/helpers/decorators";
 import { BRAND, LABEL, RAW } from "@agpu/helpers/decorators";
+import "@webgpu/types";
 // eslint-disable-next-line
 export interface RenderBundleCreator extends RAW<GPURenderBundle>, BRAND<"RenderBundleCreator">,LABEL {}
 /**

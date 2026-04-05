@@ -9,7 +9,7 @@
 		"typescript": "^6.0.2"
 	},
 	"name": "@agpu/utils",
-	"version": "1.0.1",
+	"version": "1.0.4",
 	"scripts": {
 		"minify:js": "node --no-warnings minify-js.js",
 		"minify:dts": "node --no-warnings minify-dts.js",
@@ -70,5 +70,10 @@
 	},
 	"dependencies": {
 		"gl-matrix": "^3.4.4"
-	}
+	},
+	"keywords":["3d","matrix","gl-matrix","color","vector","andromeda"],
+		"repository": {
+		"url": "https://github.com/Kryft-Studios/andromeda-gpu"
+	},
+	"homepage": "https://github.com/Kryft-Studios/andromeda-gpu"
 }

@@ -54,6 +54,15 @@ class Matrix3 {
         return [1, 0, 0, 0, 1, 0, 0, 0, 1];
     }
 
+    get x() { return this.#mat3[0]; }
+    set x(value: number) { this.#mat3[0] = value; }
+    get y() { return this.#mat3[1]; }
+    set y(value: number) { this.#mat3[1] = value; }
+    get z() { return this.#mat3[2]; }
+    set z(value: number) { this.#mat3[2] = value; }
+    get w() { return this.#mat3[3]; }
+    set w(value: number) { this.#mat3[3] = value; }
+
     raw() { return this.#mat3; }
     clone() { return Matrix3.clone(this); }
     copy(other: Matrix3) { return Matrix3.copy(this, other); }

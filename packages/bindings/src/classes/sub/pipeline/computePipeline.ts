@@ -1,3 +1,5 @@
+/// <reference types="@webgpu/types" />
+
 import {brand} from "@agpu/helpers/decorators";
 import {labeling} from "@agpu/helpers/decorators";
 import {raw} from "@agpu/helpers/decorators";
@@ -5,6 +7,7 @@ import { BRAND, RAW } from "@agpu/helpers/decorators";
 import DC_MEMBER from "../../../helpers/types/DCMember";
 import PipelineLayoutCreator from "./pipelineLayout";
 import ShaderModuleCreator from "../data/shaderModule";
+import "@webgpu/types";
 // eslint-disable-next-line
 export interface ComputePipelineCreator extends RAW<Promise<GPUComputePipeline>>, BRAND<"ComputePipelineCreator"> {
     label(): Promise<string>;

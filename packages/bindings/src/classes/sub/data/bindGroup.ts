@@ -1,3 +1,5 @@
+/// <reference types="@webgpu/types" />
+
 import {brand} from "@agpu/helpers/decorators";
 import {labeling} from "@agpu/helpers/decorators";
 import {raw} from "@agpu/helpers/decorators";
@@ -7,6 +9,7 @@ import BindGroupLayoutCreator from "./bindGroupLayout";
 import BufferCreator from "./buffers";
 import SamplerCreator from "../pipeline/sampler";
 import TextureCreator from "./texture";
+import "@webgpu/types";
 // eslint-disable-next-line
 export interface BindGroupCreator extends RAW<GPUBindGroup>, BRAND<"BindGroupCreator">,LABEL {}
 /**

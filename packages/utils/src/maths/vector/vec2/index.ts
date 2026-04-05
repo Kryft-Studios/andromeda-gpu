@@ -238,20 +238,20 @@ class Vector2 {
         return { x: 0, y: 0 };
     }
 
-    x(): number;
-    x(num: number): this;
-    x(num?: number): this | number {
-        if (typeof num === "undefined") return this.#vec2[0];
-        this.#vec2[0] = num;
-        return this;
+    get x() {
+        return this.#vec2[0];
     }
 
-    y(): number;
-    y(num: number): this;
-    y(num?: number): this | number {
-        if (typeof num === "undefined") return this.#vec2[1];
-        this.#vec2[1] = num;
-        return this;
+    set x(value: number) {
+        this.#vec2[0] = value;
+    }
+
+    get y() {
+        return this.#vec2[1];
+    }
+
+    set y(value: number) {
+        this.#vec2[1] = value;
     }
 
     raw() {

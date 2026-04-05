@@ -1,3 +1,4 @@
+import MaterialDescriptor from ".";
 
 const glmreg = /@[\s\n]*location[\s\n]*\([\n\s]*([\d]+)[\n\s]*\)[\n\s]*([\w]+)[\n\s]*\:[\n\s]*([\w\<\>]+)/g
 export function getLocationsMetadata(code: string) {
@@ -22,8 +23,27 @@ export function getGBMetadata(code: string) {
         a.push({
             group: Number(item[1]),
             binding: Number(item[2]),
-            type: item[6] as `vec${2|3|4}${"f"|"h"|"i"|"u"}`
+            type: item[6] as `vec${2 | 3 | 4}${"f" | "h" | "i" | "u"}`
         })
     }
     return a;
+}
+
+const structRegex = /struct[\n\s]+([\w\d]+)[\n\s]*\{([\s\S\n]*?)\}/g
+
+const fieldRegex = /((?:@[\n\s]*[\w\d*()]+[\n\s]*)*)([\w\d]+)[\n\s]*:[\n\s]*([\w\d]+)[,;\n]?/g;
+
+export function getStructs(code: string): MaterialDescriptor.STRUCTS[] {
+    return [...code.matchAll(structRegex)].map(a => {
+        return {
+            name: a[1] as string,
+            fields: [...a[2].matchAll(fieldRegex)].map(a => {
+                return {
+                    tag: a[1],
+                    name: a[2],
+                    type: a[3] as `vec${2 | 3 | 4}${"f" | "h" | "i" | "u"}`
+                }
+            })
+        }
+    })
 }

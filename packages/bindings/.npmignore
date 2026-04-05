@@ -3,7 +3,7 @@ src
 node_modules
 
 # Build
-data
+/data
 minify-dts.js
 minify-js.js
 minify-end.js

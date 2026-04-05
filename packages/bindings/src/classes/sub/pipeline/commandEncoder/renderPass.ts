@@ -1,3 +1,5 @@
+/// <reference types="@webgpu/types" />
+
 import error from "../../../../helpers/errors";
 import DC_MEMBER from "../../../../helpers/types/DCMember";
 import UNSURE from "@agpu/helpers/unsure";
@@ -7,6 +9,7 @@ import TextureViewCreator from "../../data/texture/textureView";
 import RenderEncoderBase, { RENDER_ENCODER_BIND_GROUP_DYNAMIC_OFFSET_DATA } from "./renderEncoderBase";
 import RenderBundleCreator from "../renderBundleEncoder/renderBundle";
 import {brand} from "@agpu/helpers/decorators";
+import "@webgpu/types";
 /**
  * Wrapper around {@link GPURenderPassEncoder} with cached state helpers and a
  * higher-level API consistent with the rest of the bindings package.
@@ -52,7 +55,7 @@ export class RenderPassCreator extends RenderEncoderBase<GPURenderPassEncoder> {
                 self.encoder.endOcclusionQuery();
             }
         };
-    }
+    } 
 
     /**
      * Builds the native WebGPU descriptor consumed by `beginRenderPass`.

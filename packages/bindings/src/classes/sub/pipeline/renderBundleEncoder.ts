@@ -1,8 +1,10 @@
+/// <reference types="@webgpu/types" />
+
 import {brand} from "@agpu/helpers/decorators";
 import { BRAND, LABEL, RAW } from "@agpu/helpers/decorators";
 import RenderEncoderBase from "./commandEncoder/renderEncoderBase";
 import RenderBundleCreator from "./renderBundleEncoder/renderBundle";
-
+import "@webgpu/types";
 // eslint-disable-next-line
 export interface RenderBundleEncoderCreator extends RAW<GPURenderBundleEncoder>, BRAND<"RenderBundleEncoderCreator">, LABEL {}
 /**

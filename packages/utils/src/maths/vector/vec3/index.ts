@@ -258,28 +258,28 @@ class Vector3 {
         return { x: 0, y: 0, z: 0 };
     }
 
-    x(): number;
-    x(num: number): this;
-    x(num?: number): this | number {
-        if (typeof num === "undefined") return this.#vec3[0];
-        this.#vec3[0] = num;
-        return this;
+    get x() {
+        return this.#vec3[0];
     }
 
-    y(): number;
-    y(num: number): this;
-    y(num?: number): this | number {
-        if (typeof num === "undefined") return this.#vec3[1];
-        this.#vec3[1] = num;
-        return this;
+    set x(value: number) {
+        this.#vec3[0] = value;
     }
 
-    z(): number;
-    z(num: number): this;
-    z(num?: number): this | number {
-        if (typeof num === "undefined") return this.#vec3[2];
-        this.#vec3[2] = num;
-        return this;
+    get y() {
+        return this.#vec3[1];
+    }
+
+    set y(value: number) {
+        this.#vec3[1] = value;
+    }
+
+    get z() {
+        return this.#vec3[2];
+    }
+
+    set z(value: number) {
+        this.#vec3[2] = value;
     }
 
     raw() {

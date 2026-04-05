@@ -9,8 +9,17 @@ importers:
   .:
     dependencies:
       '@agpu/bindings':
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: ^0.2.11
+        version: 0.2.11
+      '@agpu/helpers':
+        specifier: ^0.2.3
+        version: 0.2.3
+      '@agpu/utils':
+        specifier: ^1.0.2
+        version: 1.0.2
+      '@webgpu/types':
+        specifier: ^0.1.69
+        version: 0.1.69
     devDependencies:
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.58.0
@@ -36,11 +45,14 @@ importers:
 
 packages:
 
-  '@agpu/bindings@0.2.2':
-    resolution: {integrity: sha512-UO54xdvKsmuYZB/sD3Lz7PLMFGeFKtJKWEe/5gBL6D1voZe9TyxO0KoiFDjvoM3BpBVYL5tTTKVCNkxWoajI7A==}
+  '@agpu/bindings@0.2.11':
+    resolution: {integrity: sha512-dEgSCqQ/BYFkV4OLMsBGCX6GzZnWQHHkfsQdD/VAF2T1AIKzgd/wuYgUm1O2Rz6Zi/6ZQUnnLjFSa5YsZN7gRg==}
 
-  '@agpu/helpers@0.2.2':
-    resolution: {integrity: sha512-bPTGBEPx+O9eGBEBPupF727RdBFFlG0wO96kndlR47AKDC4+HbxxaY5lBUHUt2Di8ggpKxZ+SSpSHDyz31ir2A==}
+  '@agpu/helpers@0.2.3':
+    resolution: {integrity: sha512-JYlXn/kU5tomcD3j/zpJnGQqQNZdCGaZwHPOMJNEXO3NCtuKfYKS6GkVaR1Pr/YKaJ1vS0Qmu9/US9LMvDXP4A==}
+
+  '@agpu/utils@1.0.2':
+    resolution: {integrity: sha512-dfUXAi0KPG7m48XQKbfj4m3sg2/BL0cyeCdiHJllzJAaMb15+TTYT2PK2Nunebb5EDb2xkOBDR/fgT12bCb62g==}
 
   '@eslint-community/eslint-utils@4.9.1':
     resolution: {integrity: sha512-phrYmNiYppR7znFEdqgfWHXR6NCkZEK7hwWDHZUjit/2/U0r6XvkDl0SYnoM51Hq7FhCGdLDT6zxCCOY1hexsQ==}
@@ -300,6 +312,9 @@ packages:
   flatted@3.4.2:
     resolution: {integrity: sha512-PjDse7RzhcPkIJwy5t7KPWQSZ9cAbzQXcafsetQoD7sOJRQlGikNbx7yZp2OotDnJyrDcbyRq3Ttb18iYOqkxA==}
 
+  gl-matrix@3.4.4:
+    resolution: {integrity: sha512-latSnyDNt/8zYUB6VIJ6PCh2jBjJX6gnDsoCZ7LyW7GkqrD51EWwa9qCoGixj8YqBtETQK/xY7OmpTF8xz1DdQ==}
+
   glob-parent@6.0.2:
     resolution: {integrity: sha512-XxwI8EOhVQgWp6iDL+3b0r86f4d6AX6zSU55HfB4ydCEuXLXc5FcYeOu+nnGftS4TEju/11rt4KJPTMgbfmv4A==}
     engines: {node: '>=10.13.0'}
@@ -459,12 +474,16 @@ packages:
 
 snapshots:
 
-  '@agpu/bindings@0.2.2':
+  '@agpu/bindings@0.2.11':
     dependencies:
-      '@agpu/helpers': 0.2.2
+      '@agpu/helpers': 0.2.3
       '@webgpu/types': 0.1.69
 
-  '@agpu/helpers@0.2.2': {}
+  '@agpu/helpers@0.2.3': {}
+
+  '@agpu/utils@1.0.2':
+    dependencies:
+      gl-matrix: 3.4.4
 
   '@eslint-community/eslint-utils@4.9.1(eslint@10.1.0)':
     dependencies:
@@ -753,6 +772,8 @@ snapshots:
       keyv: 4.5.4
 
   flatted@3.4.2: {}
+
+  gl-matrix@3.4.4: {}
 
   glob-parent@6.0.2:
     dependencies:

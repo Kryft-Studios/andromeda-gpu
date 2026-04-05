@@ -1,9 +1,11 @@
+/// <reference types="@webgpu/types" />
+
 import {brand}from "@agpu/helpers/decorators";
 import error from "../../helpers/errors";
 import { BRAND } from "@agpu/helpers/decorators";
 import AdapterControls from "./adapter";
 import { ContextControls } from "./context";
-
+import "@webgpu/types";
 // eslint-disable-next-line
 interface WebGPUControls extends BRAND<"WebGPUControls"> {};
 
@@ -22,6 +24,9 @@ interface WebGPUControls extends BRAND<"WebGPUControls"> {};
         if(!ctx)throw error(27,"Failed to acquire a WebGPU canvas context.","Ensure the canvas supports getContext('webgpu') and has not been initialized with a different context type.");
         else return new ContextControls(ctx);
     };
+    get Context(){
+        return this.context()
+    }
     #adCached?:AdapterControls
     get Adapter():Promise<AdapterControls>{
         if(this.#adCached)return Promise.resolve(this.#adCached);

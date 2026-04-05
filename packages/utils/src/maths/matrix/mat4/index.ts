@@ -87,6 +87,15 @@ class Matrix4 {
         return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
     }
 
+    get x() { return this.#mat4[0]; }
+    set x(value: number) { this.#mat4[0] = value; }
+    get y() { return this.#mat4[1]; }
+    set y(value: number) { this.#mat4[1] = value; }
+    get z() { return this.#mat4[2]; }
+    set z(value: number) { this.#mat4[2] = value; }
+    get w() { return this.#mat4[3]; }
+    set w(value: number) { this.#mat4[3] = value; }
+
     raw() { return this.#mat4; }
     clone() { return Matrix4.clone(this); }
     copy(other: Matrix4) { return Matrix4.copy(this, other); }

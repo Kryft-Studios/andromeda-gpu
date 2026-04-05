@@ -1,3 +1,5 @@
+/// <reference types="@webgpu/types" />
+
 import error from "../../../helpers/errors"
 import {brand} from "@agpu/helpers/decorators"
 import {labeling} from "@agpu/helpers/decorators"
@@ -6,6 +8,7 @@ import { BRAND, LABEL } from "@agpu/helpers/decorators"
 import UNSURE from "@agpu/helpers/unsure"
 import BufferCreator from "../data/buffers"
 import CommandBufferCreator from "../data/commandbuffer"
+import "@webgpu/types";
 import ComputePassCreator, { COMPUTE_PASS_OPTIONS } from "./commandEncoder/computepass"
 import RenderPassCreator, { RENDER_PASS_OPTIONS } from "./commandEncoder/renderPass"
 import TextureCreator from "../data/texture"
@@ -33,8 +36,12 @@ export class CommandEncoderCreator {
         this.RenderPass = class extends RenderPassCreator {
         constructor(options: RENDER_PASS_OPTIONS){
                 super(device,self.cmdencoder,options)
-            }
         }
+            /**(dont use) */
+            static buildDescriptor(options:RENDER_PASS_OPTIONS){
+                return RenderPassCreator.buildDescriptor(options)
+            }
+        } 
         this.ComputePass = class extends ComputePassCreator {
             constructor(options: COMPUTE_PASS_OPTIONS){
                 super(device,self.cmdencoder,options)

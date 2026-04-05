@@ -1,3 +1,5 @@
+/// <reference types="@webgpu/types" />
+
 import {brand} from "@agpu/helpers/decorators";
 import {raw} from "@agpu/helpers/decorators";
 import {labeling} from "@agpu/helpers/decorators";
@@ -9,6 +11,7 @@ import BindGroupCreator from "../../data/bindGroup";
 import BufferCreator from "../../data/buffers";
 import ComputePipelineCreator from "../computePipeline";
 import QuerySetCreator from "../querySet";
+import "@webgpu/types";
 import IndirectBufferCreator, { INDIRECT_BUFFER_BINDING_OPTIONS, INDIRECT_BUFFER_OPTIONS } from "./renderPass/indirectBuffer";
 // eslint-disable-next-line
 export interface ComputePassCreator extends RAW<GPUComputePassEncoder>, BRAND<"ComputePassCreator">,LABEL{};
