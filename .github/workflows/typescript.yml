@@ -1,0 +1,48 @@
+name: "Typescript Checking"
+
+on: 
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  list-projects: 
+    runs-on: unbuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set-matrix
+        run: |
+          dirs=$(find packages -name "tsconfig.json" -not -path "*/node_modules/*" -exec dirname {} \;)
+          json=$(echo "$dirs" | jq -R . | jq -s -c .)
+          echo "matrix=$json" >> $GITHUB_OUTPUT
+  run-tsc:
+    runs-on: ubuntu-latest
+    needs: list-projects
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.list-packages.outputs.matrix) }}
+    defaults:
+      run:
+        working-directory: ${{ matrix.package }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: "Setup Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24 
+
+      - name: "Setup pnpm"
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - name: "Install Dependencies"
+        run: pnpm install
+
+      - name: "Run Typescript"
+        run: tsc --noEmit

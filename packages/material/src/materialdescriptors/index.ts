@@ -1,6 +1,7 @@
-import getBlendOptions from "./blendoptions";
+
+import {getGBMetadata,getLocationsMetadata,getStructs} from "./shaderparse"
 import { VertexFormatOffsetLookup } from "./lookups";
-import { getGBMetadata, getLocationsMetadata, getStructs } from "./shaderparse";
+import getBlendOptions from "./blendoptions";
 import { WebGPUControls } from "@agpu/bindings";
 type DEVICE = Awaited<ReturnType<Awaited<WebGPUControls["Adapter"]>["device"]>>
 class MaterialDescriptor {
@@ -27,7 +28,7 @@ class MaterialDescriptor {
         else this.locations = options.locations
         if (!options.label) this.label = "Unknown"
         else this.label = options.label
-        if (!options.structs) this.structs = getStructs(code)
+        if (!options.structs) this.structs = getStructs(code) as MaterialDescriptor.STRUCTS[]
         else this.structs = options.structs
         if(!options.blend)this.blend = [MaterialDescriptor.DEFAULT_FRAGMENT_TARGET]
         else this.blend = getBlendOptions(options.blend)
@@ -48,7 +49,7 @@ class MaterialDescriptor {
                 format: a.type,
                 shaderLocation: a.location,
                 offset: currentOffset
-            };
+            };//@ts-ignore
             currentOffset += VertexFormatOffsetLookup[a.type];
             return attribute;
         });
@@ -58,6 +59,7 @@ class MaterialDescriptor {
         return this.#pipeline = new this.#device.RenderPipeline({
             "vertex": {
                 "module": this.shaderModule,
+                //@ts-ignore
                 buffers: [{
                     arrayStride: totalStride,
                     "attributes": attributes

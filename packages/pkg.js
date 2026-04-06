@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // RUN THIS WITH NODE TO CREATE A NEW PACKAGE
 import { execSync } from 'node:child_process';
-import { mkdirSync, readdirSync, readFile, readFileSync, rmdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFile, readFileSync, rmdirSync, rmSync, writeFile, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline/promises';
 const command = process.argv.slice(2)
@@ -66,6 +66,7 @@ const minifyDts = readFileSync("./template/minify-dts.js")
 const minifyEnd = readFileSync("./template/minify-end.js")
 const minifyJS = readFileSync("./template/minify-js.js")
 const tsConfig = readFileSync("./template/tsconfig")
+const license = readFileSync("./template/LICENSE.md")
 await progress(30,"Copying templates...")
 const eslintConfig = readFileSync("./template/eslint.config")
 const gitIgnore = readFileSync("./template/.gitignore")
@@ -97,6 +98,7 @@ writeFileSync("./minify-js.js",minifyJS)
 writeFileSync("./minify-end.js",minifyEnd)
 writeFileSync("./eslint.config.js",eslintConfig)
 writeFileSync("./tsconfig.json",tsConfig)
+writeFileSync("./LICENSE.md",license)
 writeFileSync("./README.md", `# ${fullName}
 ## Installation
 \`\`\`bash

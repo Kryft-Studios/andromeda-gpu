@@ -26,5 +26,16 @@
 		"@agpu/bindings": "^0.2.15",
 		"@agpu/helpers": "^0.2.5",
 		"@agpu/utils": "^1.0.4"
-	}
+	},
+	"exports": {
+		".":{
+			"default":"./dist/index.js",
+			"types":"./dist/index.d.ts"
+		}
+	},
+	"keywords": ["texture","webgpu","gpu","andromeda"],
+	"repository": {
+		"url": "https://github.com/Kryft-Studios/andromeda-gpu"
+	},
+	"homepage": "https://github.com/Kryft-Studios/andromeda-gpu"
 }
